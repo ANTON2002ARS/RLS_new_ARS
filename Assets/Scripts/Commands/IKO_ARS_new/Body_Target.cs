@@ -47,6 +47,7 @@ public class Body_Target : MonoBehaviour
     // След триектории\\
     private List<GameObject> trace_trajectories = new List<GameObject>();
     
+
     private void Generat_vector_circle(float radius)
     {
         // Выбираем сллучайною точку на окружности \\
