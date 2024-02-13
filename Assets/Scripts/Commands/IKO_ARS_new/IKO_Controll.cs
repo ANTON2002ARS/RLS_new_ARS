@@ -24,6 +24,8 @@ public class IKO_Controll : MonoBehaviour
     [SerializeField]
     private Scrollbar BrightnessController;
     [SerializeField]
+    private Scrollbar Scrobing_Line;
+    [SerializeField]
     private Button StartButton;    
     [SerializeField]
     private Button Restart_Button;
@@ -164,14 +166,25 @@ public class IKO_Controll : MonoBehaviour
     private float _minInterferenceBrightness;
     [SerializeField]
     private ActionIkoCheck _strobCheckAction;
-
+    
     public static Vector3 IkoCenter => Instance?.LineObject.transform.position ?? Vector3.zero;
-
-
+        
     public static IKO_Controll Instance { get; private set; }    
 
     public event UnityAction OnReset;
-
+       
+    // Количество целий для теста \\
+    [SerializeField]
+    private int Quentity_Targets_need = 8;
+    // количество обработанных целей \\
+    private int is_quentity;
+    private int _quentity_kill;
+    // интервал в секундах \\
+    private float interval = 20f;
+    private float timer = 0f;
+    // Выбраная цель\\
+    private int choice_target;
+    
 
     private void Awake()
     {
@@ -190,17 +203,7 @@ public class IKO_Controll : MonoBehaviour
     }
 
 
-    // Количество целий для теста \\
-    [SerializeField]
-    private int Quentity_Targets_need = 8;
-    // количество обработанных целей \\
-    private int is_quentity;
-    private int _quentity_kill;
-    // интервал в секундах \\
-    private float interval = 20f;
-    private float timer = 0f;
-    // Выбраная цель\\
-    private int choice_target;
+    
 
 
     void Update()
@@ -211,6 +214,8 @@ public class IKO_Controll : MonoBehaviour
         var lastAngle = angles.z;
         angles.z += LineRotationSpeed * Time.deltaTime;
         LineObject.transform.localEulerAngles = angles;
+
+
 
         for (int i = 0; i < Targets.Count; i++)
         {
@@ -269,8 +274,7 @@ public class IKO_Controll : MonoBehaviour
             GameManager.Instance.PassCheck();
         }
     }
-
-    
+        
 
     public void Changed_Text_Button()
     {
@@ -334,8 +338,21 @@ public class IKO_Controll : MonoBehaviour
         _ikoPanel.interactable = false;
         _ikoPanel.blocksRaycasts = false;
     }
+    // Стробирование антенны \\
     
-    
+    public void Start_Strobing()
+    {        
+        // Вращение линии \\
+        float angles_strib = Scrobing_Line.value;
+        var angles = LineObject.transform.localEulerAngles;
+        var lastAngle = angles.z;
+        angles.z += LineRotationSpeed *(float)(angles_strib / 100);
+        LineObject.transform.localEulerAngles = angles;
+
+
+    }
+
+
     public void EnableStrobControl()
     {
         _strobContainer.SetActive(true);
@@ -528,7 +545,7 @@ public class IKO_Controll : MonoBehaviour
 
     private bool _stop;
     public void Stop_timer()
-    { 
+    {        
         if (!_stop)
         {
             _stop = true;
@@ -547,7 +564,7 @@ public class IKO_Controll : MonoBehaviour
             Report.color = Color.black;
             if(_hasStarted == false && Targets.Count >= 1)
                 _hasStarted = true;
-            Stop_Time.GetComponentInChildren<Text>().text = "Остановить время";
+            Stop_Time.GetComponentInChildren<Text>().text = "Остановить антенну\n(время)";
             Stop_Time.GetComponent<Image>().color = new Color(127 / 255f, 127 / 255f, 127 / 255f);
             Restart_Button.interactable = true;
             StartButton.interactable = true;

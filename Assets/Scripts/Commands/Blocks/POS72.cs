@@ -9,6 +9,10 @@ public class POS72 : AbstractBlock
     [SerializeField]
     private MultistateToggleAction _workModeAction;
     [SerializeField]
+    private MultistateToggle _switch_canals_toggle;
+    [SerializeField]
+    private MultistateToggleAction _switch_canals_action;
+    [SerializeField]
     private string _strobModeName;
 
     [Header("Actions")]
@@ -32,7 +36,7 @@ public class POS72 : AbstractBlock
     {
         UpdateUI(false);
         _workModeToggle.OnStateChange += HandleWorkMode;
-
+        _switch_canals_toggle.OnStateChange += HandleWorkMode;
         HighVoltageTrigger.OnToggle.AddListener(HighVoltageAction);
         PowerTrigger.OnToggle.AddListener(PowerAction);
         RotationTrigger.OnToggle.AddListener(RotationAction);
@@ -44,8 +48,10 @@ public class POS72 : AbstractBlock
         if (clearState)
         {
             _workModeAction.Reset();
+            _switch_canals_action.Reset();
         }
         _workModeToggle.SetStateNoEvent(_workModeAction.CurrentState);
+        _switch_canals_toggle.SetStateNoEvent(_switch_canals_action.CurrentState);
         HighVoltageTrigger.SetStateNoEvent(HighVoltage.currentState);
         PowerTrigger.SetStateNoEvent(Power.currentState);
         RotationTrigger.SetStateNoEvent(Rotation.currentState);
@@ -61,15 +67,13 @@ public class POS72 : AbstractBlock
     private void HandleWorkMode(string state)
     {
         _workModeAction.CurrentState = state;
-        if (state == _strobModeName)
-        {
-            //Debug.Log("strob mode");
-            IkoController.Instance.EnableStrobControl();
-        }
+        _switch_canals_action.CurrentState = state;
+        /*if (state == _strobModeName)
+            IkoController.Instance.EnableStrobControl();      
         else
-        {
-            IkoController.Instance.DisableStrobControl();
-        }
+            IkoController.Instance.DisableStrobControl();*/
+     
         GameManager.Instance.AddToState(_workModeAction);
+        GameManager.Instance.AddToState(_switch_canals_action);
     }
 }

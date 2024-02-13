@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 11f212beab9de6849aa18065c4836c76, type: 3}
-  m_Name: K-71
+  m_Name: POV-71
   m_EditorClassIdentifier: 
-  Name: "\u041A-71"
+  Name: "\u041F\u041E\u0412 71"
   childNodes: []
-  Prefab: {fileID: 2211761970528911318, guid: ded896bda5829bd46a6e3442f2a429fa, type: 3}
+  Prefab: {fileID: 558354665909579802, guid: 43ac998b0a5f8874a9eb131cd9c97635, type: 3}

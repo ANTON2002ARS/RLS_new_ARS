@@ -10,8 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 11f212beab9de6849aa18065c4836c76, type: 3}
-  m_Name: K-71
+  m_Name: Box_ND
   m_EditorClassIdentifier: 
-  Name: "\u041A-71"
-  childNodes: []
-  Prefab: {fileID: 2211761970528911318, guid: ded896bda5829bd46a6e3442f2a429fa, type: 3}
+  Name: "\u0448\u043A\u0430\u0444 \u0418\u0414"
+  childNodes:
+  - {fileID: 11400000, guid: cbc696780387ba14d83e28069f6a4db0, type: 2}
+  - {fileID: 11400000, guid: a4b631826e35e8a4d844a0e247108129, type: 2}
+  Prefab: {fileID: 0}
