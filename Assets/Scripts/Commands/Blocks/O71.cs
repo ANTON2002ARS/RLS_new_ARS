@@ -37,9 +37,9 @@ public class O71 : AbstractBlock
     private void Start()
     {
         UpdateUI(false);
-        our_phase.OnStateChange += HandleWorkMode;
-        in_valtage.OnStateChange += HandleWorkMode;
-        scale.OnStateChange += HandleWorkMode;
+        our_phase.OnStateChange += Handle_1;
+        in_valtage.OnStateChange += Handle_2;
+        scale.OnStateChange += Handle_3;
 
         start_distation.OnToggle.AddListener(HighVoltageAction);
         pin.OnToggle.AddListener(HighVoltageAction);
@@ -69,13 +69,22 @@ public class O71 : AbstractBlock
         GameManager.Instance.AddToState(a);
     }
 
-    private void HandleWorkMode(string state)
+
+    private void Handle_1(string state)
     {
         _our_phase_action.CurrentState = state;
-        _in_valtage_action.CurrentState = state;
-        _scale_action.CurrentState = state;
         GameManager.Instance.AddToState(_our_phase_action);
+    }
+
+    private void Handle_2(string state)
+    {
+        _in_valtage_action.CurrentState = state;
         GameManager.Instance.AddToState(_in_valtage_action);
+    }
+
+    private void Handle_3(string state)
+    {
+        _scale_action.CurrentState = state;
         GameManager.Instance.AddToState(_scale_action);
     }
 }

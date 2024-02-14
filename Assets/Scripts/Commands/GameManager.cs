@@ -19,6 +19,12 @@ public class GameManager : MonoBehaviour
     private IKO_Controll _iko;
     [SerializeField]
     private GameObject Check;
+    [SerializeField]
+    private Transform InterferenceFolder;
+
+    [Header("Answer")]
+    [SerializeField]
+    private Interference_warfare list_answer;
 
     [Header("Tooltip")]
     public TooltipPanel Tooltip;
@@ -204,6 +210,59 @@ public class GameManager : MonoBehaviour
         OnReset.Invoke();
     }
 
+    // Проверка помехи на избавление \\
+    public void Check_Interference( string tag)
+    {
+        if (InterferenceFolder.childCount != 1)
+            return;
+        Action[] req = null;
+        switch (tag)
+        {
+            case "PASSIVE":
+                req = list_answer.Actions_Passive;
+                break;
+            case "FROM_LOCAL":
+                req = list_answer.Actions_Local;
+                break;            
+            case "NIP":
+                req = list_answer.Actions_NIP;
+                break;
+            case "ACTIVE_NOISE":
+                req = list_answer.Actions_ActiveNoise;
+                break;
+            case "RESPONSE":
+                req = list_answer.Actions_Response;
+                break;            
+            default:
+                Debug.Log("not find");
+                break;
+        }
+
+
+        if (actions.Count != req.Length)
+            return;
+
+        for (int i = 0; i < actions.Count; i++)
+        {
+            if (req[i].name != actions[i].name)
+                return;
+        }
+
+        if (actions.Any(a => !a.IsInRequiredState()))
+        {
+            Debug.Log("Fail on req state");            
+            return;
+        }
+        GameObject interfence = InterferenceFolder.GetChild(0).gameObject;
+        Destroy(interfence);
+    }
+
+    public List<Action> GetAction()
+    {
+        return actions;
+    }
+    
+
     public void CheckOrder()
     {
         var req = GetCurrentRoleActions().Where(a => !(a is InternalAction)).ToArray();
@@ -267,8 +326,11 @@ public class GameManager : MonoBehaviour
                     internalAction.DispatchAction();
             }
         }
-
+          
         var last = actions.LastOrDefault();
+
+        Debug.Log("Name: " + a.name);
+        
         if (a.isUnordored)
         {
             UnordoredActionGroup g;
@@ -294,11 +356,15 @@ public class GameManager : MonoBehaviour
         {
             actions.Remove(last);
             if (!a.IsInDefaultState() || !a.RemoveIfMatchingDefaultState)
+            {
                 actions.Add(a);
+                Debug.Log("add");
+            }                
         }
         else
         {
             actions.Add(a);
+            Debug.Log("add");
         }
     }
     

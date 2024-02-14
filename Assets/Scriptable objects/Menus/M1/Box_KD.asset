@@ -15,7 +15,6 @@ MonoBehaviour:
   Name: "\u0448\u043A\u0430\u0444 \u041A\u0414"
   childNodes:
   - {fileID: 11400000, guid: f4c1a497654c34144bbe73a3e4441dc1, type: 2}
-  - {fileID: 11400000, guid: aa66225a1ff27bc4e8890365639e6ba7, type: 2}
   - {fileID: 11400000, guid: f52e831d26679844da36e042db3e81ee, type: 2}
   - {fileID: 11400000, guid: 7c919893167cf9e4ebd7daa2011e81e5, type: 2}
   - {fileID: 11400000, guid: a8820086d23609049b742b8c1d30ca02, type: 2}

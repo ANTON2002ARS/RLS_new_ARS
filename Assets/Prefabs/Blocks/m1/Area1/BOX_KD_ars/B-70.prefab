@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8254667100858747795}
   - component: {fileID: -3621066028754173927}
   - component: {fileID: -2790077557942015593}
+  - component: {fileID: 4035527865775661599}
   m_Layer: 0
   m_Name: B-70
   m_TagString: Untagged
@@ -76,6 +77,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &4035527865775661599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4051010261271900671}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 279d4b27dfe322a4e851d6d26e27aeeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1436617471932672643
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -172,12 +185,12 @@ PrefabInstance:
     - target: {fileID: 2186087247986983275, guid: 53b9f1d90fa18f5498848303359da6e7,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -269.8575
+      value: -168.2
       objectReference: {fileID: 0}
     - target: {fileID: 2186087247986983275, guid: 53b9f1d90fa18f5498848303359da6e7,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -174.93835
+      value: -179.4
       objectReference: {fileID: 0}
     - target: {fileID: 2186087247986983275, guid: 53b9f1d90fa18f5498848303359da6e7,
         type: 3}
@@ -233,6 +246,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Trigger Network
+      objectReference: {fileID: 0}
+    - target: {fileID: 8585850671366551011, guid: 53b9f1d90fa18f5498848303359da6e7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

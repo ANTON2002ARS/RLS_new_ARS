@@ -184,7 +184,8 @@ public class IKO_Controll : MonoBehaviour
     private float timer = 0f;
     // Выбраная цель\\
     private int choice_target;
-    
+
+    private string _interferense_tag;
 
     private void Awake()
     {
@@ -202,10 +203,7 @@ public class IKO_Controll : MonoBehaviour
         Rpm12_Btn.onClick.AddListener(() => WorkMode = IkoWorkMode.Rpm12);
     }
 
-
-    
-
-
+        
     void Update()
     {
         if (!_hasStarted) return;
@@ -215,7 +213,11 @@ public class IKO_Controll : MonoBehaviour
         angles.z += LineRotationSpeed * Time.deltaTime;
         LineObject.transform.localEulerAngles = angles;
 
-
+        //проверяем на избавление от помехи\\
+       /* if (_interferense_tag != null)
+        {
+            GameManager.Instance.Check_Interference(tag);
+        }*/
 
         for (int i = 0; i < Targets.Count; i++)
         {
@@ -333,7 +335,7 @@ public class IKO_Controll : MonoBehaviour
 
     public void CloseIko()
     {
-        Stop_timer();
+        //Stop_timer();
         _ikoPanel.alpha = 0.0f;
         _ikoPanel.interactable = false;
         _ikoPanel.blocksRaycasts = false;
@@ -346,9 +348,25 @@ public class IKO_Controll : MonoBehaviour
         float angles_strib = Scrobing_Line.value;
         var angles = LineObject.transform.localEulerAngles;
         var lastAngle = angles.z;
-        angles.z += LineRotationSpeed *(float)(angles_strib / 100);
+        angles.z += LineRotationSpeed *(float)(angles_strib / 10);
         LineObject.transform.localEulerAngles = angles;
 
+        if (InterferenceFolder.transform.childCount != 1)
+            return; ;   
+
+        Transform Interference = InterferenceFolder.GetChild(0);       
+        
+        if(Interference.tag == "PASSIVE")
+                Body_Passive._is_strobing = true;        
+    }
+
+    public void Test_B()
+    {
+        var A = GameManager.Instance.GetAction();
+        foreach (var item in A)
+        {
+            Debug.Log(item.ActionName);
+        }
 
     }
 
@@ -512,6 +530,7 @@ public class IKO_Controll : MonoBehaviour
         Choice_target.options.Clear();
         Choice_target.GetComponentInChildren<Text>().text = null;
         // помеху убераем\\
+        _interferense_tag = null;
         while (InterferenceFolder.childCount > 0)
             DestroyImmediate(InterferenceFolder.GetChild(0).gameObject);  
         // линию в начало\\            
@@ -569,6 +588,7 @@ public class IKO_Controll : MonoBehaviour
             Restart_Button.interactable = true;
             StartButton.interactable = true;
         }
+        Scrobing_Line.value = 0;
     }
     
     
@@ -654,31 +674,36 @@ public class IKO_Controll : MonoBehaviour
 
     public void Generate_Interference()
     {
-        if (InterferenceFolder.transform.childCount > 1)
+        if (InterferenceFolder.transform.childCount != 0)
         {
             Report.text = Str_Mistakes = "ТЕСТ НЕ ПРОЙДЕН, ошибка не избавился от помех";
             Report.color = Color.red;
-            Mistakes = Max_Mistakes;
-        }
-
+            Mistakes = Max_Mistakes;            
+        }       
+        //Random.Range(0, 5)
         switch (Random.Range(0, 5))
         {
             case 0:
                 Instantiate(Passive_Prefab[Random.Range(0, Passive_Prefab.Count)], InterferenceFolder);
+                _interferense_tag = "PASSIVE";
                 break;
             case 1:
                 Instantiate(From_local_Prefab[Random.Range(0, From_local_Prefab.Count)], InterferenceFolder);
+                _interferense_tag = "FROM_LOCAL";
                 break;
             case 3:
                 Instantiate(NIP_Prefab[Random.Range(0, NIP_Prefab.Count)], InterferenceFolder);
+                _interferense_tag = "NIP";
                 break;
             case 4:
                 Instantiate(Active_noise_Prefab[Random.Range(0, Active_noise_Prefab.Count)], InterferenceFolder);
+                _interferense_tag = "ACTIVE_NOISE";
                 break;
             default:
                 Instantiate(Response_Prefab[Random.Range(0, Response_Prefab.Count)], InterferenceFolder);
+                _interferense_tag = "RESPONSE";
                 break;
-        } 
+        }        
     }
 
     
@@ -687,7 +712,7 @@ public class IKO_Controll : MonoBehaviour
         if (!_hasStarted) return;
         if (InterferenceFolder.transform.childCount == 0)
             return;
-        
+
         GameObject interference = InterferenceFolder.GetChild(0).gameObject;
         switch (namber_button)
         {

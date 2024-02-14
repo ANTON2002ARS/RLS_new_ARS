@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8587701632492501637
 RectTransform:
   m_ObjectHideFlags: 0
@@ -167,6 +167,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _states:
+  - DirectionBtn: {fileID: 4386732476990239586}
+    StateName: "\u041A\u041E\u041D\u0422\u0420.\u041E\u041F\u041E\u0417\u041D"
+    DisplayObject: {fileID: 574403926974661079}
+    StatePos: {fileID: 629138554071475195}
+    angle: 0
+    index: 0
   - DirectionBtn: {fileID: 2707251525312968134}
     StateName: "\u0412\u041D\u0415\u0428\u041D."
     DisplayObject: {fileID: 7154494305646522242}
@@ -177,12 +183,6 @@ MonoBehaviour:
     StateName: "\u042D\u0425\u041E"
     DisplayObject: {fileID: 7793661986167490196}
     StatePos: {fileID: 8484965022502697472}
-    angle: 0
-    index: 0
-  - DirectionBtn: {fileID: 4386732476990239586}
-    StateName: "\u041A\u041E\u041D\u0422\u0420.\u041E\u041F\u041E\u0417\u041D"
-    DisplayObject: {fileID: 574403926974661079}
-    StatePos: {fileID: 629138554071475195}
     angle: 0
     index: 0
   - DirectionBtn: {fileID: 6682489396263223899}
@@ -485,7 +485,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7723519847931090739
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1901,6 +1901,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _states:
+  - DirectionBtn: {fileID: 3894152288085549766}
+    StateName: 75
+    DisplayObject: {fileID: 1632132573497314768}
+    StatePos: {fileID: 5249690635034642028}
+    angle: 0
+    index: 0
   - DirectionBtn: {fileID: 5756529252860864458}
     StateName: 0.2
     DisplayObject: {fileID: 7200974256649515553}
@@ -1923,12 +1929,6 @@ MonoBehaviour:
     StateName: 30
     DisplayObject: {fileID: 1733642857729268557}
     StatePos: {fileID: 9038951238337715834}
-    angle: 0
-    index: 0
-  - DirectionBtn: {fileID: 3894152288085549766}
-    StateName: 75
-    DisplayObject: {fileID: 1632132573497314768}
-    StatePos: {fileID: 5249690635034642028}
     angle: 0
     index: 0
   _rotationCenter: {fileID: 4227275079239920545}
@@ -2804,7 +2804,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1410662438686341890
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3045,6 +3045,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _states:
+  - DirectionBtn: {fileID: 2618274952091171389}
+    StateName: 200B
+    DisplayObject: {fileID: 35460094958180595}
+    StatePos: {fileID: 5180468977197901534}
+    angle: 0
+    index: 0
   - DirectionBtn: {fileID: 731579465334833283}
     StateName: 2B
     DisplayObject: {fileID: 6332891757941714792}
@@ -3067,12 +3073,6 @@ MonoBehaviour:
     StateName: 100B
     DisplayObject: {fileID: 1096802328405754548}
     StatePos: {fileID: 2371863283496845113}
-    angle: 0
-    index: 0
-  - DirectionBtn: {fileID: 2618274952091171389}
-    StateName: 200B
-    DisplayObject: {fileID: 35460094958180595}
-    StatePos: {fileID: 5180468977197901534}
     angle: 0
     index: 0
   _rotationCenter: {fileID: 892069795534420316}
@@ -3793,7 +3793,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7492360836906591135
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3937,7 +3937,7 @@ PrefabInstance:
     - target: {fileID: 1002604183442090601, guid: 53b9f1d90fa18f5498848303359da6e7,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.42261827
+      value: 0.49999994
       objectReference: {fileID: 0}
     - target: {fileID: 1002604183442090601, guid: 53b9f1d90fa18f5498848303359da6e7,
         type: 3}
@@ -3952,12 +3952,12 @@ PrefabInstance:
     - target: {fileID: 1002604183442090601, guid: 53b9f1d90fa18f5498848303359da6e7,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.9063079
+      value: 0.86602545
       objectReference: {fileID: 0}
     - target: {fileID: 1002604183442090601, guid: 53b9f1d90fa18f5498848303359da6e7,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: -130
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 2186087247986983275, guid: 53b9f1d90fa18f5498848303359da6e7,
         type: 3}
@@ -4077,7 +4077,7 @@ PrefabInstance:
     - target: {fileID: 3756754317102527558, guid: 53b9f1d90fa18f5498848303359da6e7,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9396927
+      value: 0.9063079
       objectReference: {fileID: 0}
     - target: {fileID: 3756754317102527558, guid: 53b9f1d90fa18f5498848303359da6e7,
         type: 3}
@@ -4092,17 +4092,17 @@ PrefabInstance:
     - target: {fileID: 3756754317102527558, guid: 53b9f1d90fa18f5498848303359da6e7,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.3420201
+      value: 0.42261827
       objectReference: {fileID: 0}
     - target: {fileID: 3756754317102527558, guid: 53b9f1d90fa18f5498848303359da6e7,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: -40
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 5537953215095118035, guid: 53b9f1d90fa18f5498848303359da6e7,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5876390039227241429, guid: 53b9f1d90fa18f5498848303359da6e7,
         type: 3}
@@ -4147,7 +4147,7 @@ PrefabInstance:
     - target: {fileID: 8903696915236002086, guid: 53b9f1d90fa18f5498848303359da6e7,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

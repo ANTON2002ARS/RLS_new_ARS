@@ -8,6 +8,9 @@ public class Domain : MonoBehaviour
     [SerializeField]    
     private GameObject image;
 
+    [SerializeField]
+    private CanvasGroup Canvas;
+
     void Start()
     {
         image.SetActive(false);
@@ -16,9 +19,13 @@ public class Domain : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Line")
+        if (collision.tag != "Line")
+            return;        
+        image.SetActive(true);
+           
+        if(this.tag == "PASSIVE" && Body_Passive._is_strobing == true)            
         {
-            image.SetActive(true);
-        }
+            Canvas.alpha -= 0.4f;           
+        }                 
     }
 }

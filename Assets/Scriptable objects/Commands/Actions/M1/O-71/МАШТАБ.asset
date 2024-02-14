@@ -9,9 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 11f212beab9de6849aa18065c4836c76, type: 3}
-  m_Name: PF-71
+  m_Script: {fileID: 11500000, guid: 1ed20cccbabc5074c9c79d5ea0f863e3, type: 3}
+  m_Name: "\u041C\u0410\u0428\u0422\u0410\u0411"
   m_EditorClassIdentifier: 
-  Name: "\u041F\u0424-71"
-  childNodes: []
-  Prefab: {fileID: 4925017146540601511, guid: 776629add05418042b89a8ebf2d5cfd4, type: 3}
+  ActionName: "\u041C\u0410\u0428\u0422\u0410\u0411"
+  isUnordored: 0
+  relatedActionGroup: {fileID: 0}
+  _defaultState: A
+  _requiredState: S
+  CurrentState: A

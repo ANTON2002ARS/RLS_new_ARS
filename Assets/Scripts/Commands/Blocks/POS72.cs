@@ -8,10 +8,12 @@ public class POS72 : AbstractBlock
     private MultistateToggle _workModeToggle;
     [SerializeField]
     private MultistateToggleAction _workModeAction;
+
     [SerializeField]
     private MultistateToggle _switch_canals_toggle;
     [SerializeField]
     private MultistateToggleAction _switch_canals_action;
+
     [SerializeField]
     private string _strobModeName;
 
@@ -22,8 +24,8 @@ public class POS72 : AbstractBlock
     public ToggleAction Speed;
 
     [Header("Triggers")]
-    public Toggle HighVoltageTrigger;
-    public Toggle PowerTrigger;
+    public Toggle_Button HighVoltageTrigger;
+    public Toggle_Button PowerTrigger;
     public Toggle RotationTrigger;
     public Toggle SpeedTrigger;
 
@@ -32,16 +34,19 @@ public class POS72 : AbstractBlock
     public void RotationAction(bool state) => TriggerEventInGM(Rotation, state);
     public void SpeedAction(bool state) => TriggerEventInGM(Speed, state);
 
+
     private void Start()
     {
         UpdateUI(false);
-        _workModeToggle.OnStateChange += HandleWorkMode;
-        _switch_canals_toggle.OnStateChange += HandleWorkMode;
+        _workModeToggle.OnStateChange += Handle_1;
+        _switch_canals_toggle.OnStateChange += Handle_2;
+
         HighVoltageTrigger.OnToggle.AddListener(HighVoltageAction);
         PowerTrigger.OnToggle.AddListener(PowerAction);
         RotationTrigger.OnToggle.AddListener(RotationAction);
         SpeedTrigger.OnToggle.AddListener(SpeedAction);
     }
+
 
     public override void UpdateUI(bool clearState)
     {
@@ -58,22 +63,28 @@ public class POS72 : AbstractBlock
         SpeedTrigger.SetStateNoEvent(Speed.currentState);
     }
 
+
     private void TriggerEventInGM(ToggleAction a, bool state)
     {
         a.currentState = state;
         GameManager.Instance.AddToState(a);
     }
 
-    private void HandleWorkMode(string state)
+
+    private void Handle_1(string state)
     {
         _workModeAction.CurrentState = state;
-        _switch_canals_action.CurrentState = state;
+        GameManager.Instance.AddToState(_workModeAction);
         /*if (state == _strobModeName)
             IkoController.Instance.EnableStrobControl();      
         else
             IkoController.Instance.DisableStrobControl();*/
-     
-        GameManager.Instance.AddToState(_workModeAction);
+    }
+
+
+    private void Handle_2(string state)
+    {
+        _switch_canals_action.CurrentState = state;
         GameManager.Instance.AddToState(_switch_canals_action);
     }
 }

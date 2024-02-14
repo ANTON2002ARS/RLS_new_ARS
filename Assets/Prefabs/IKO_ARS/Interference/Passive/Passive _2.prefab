@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 906151367404453552}
   - component: {fileID: 8746448164476296470}
   - component: {fileID: 7703338627298237290}
+  - component: {fileID: 5574810168679611896}
   m_Layer: 5
   m_Name: Passive _2
   m_TagString: PASSIVE
@@ -516,8 +517,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aec206272f1568c4db2830636c9c2748, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  max_Radius: 0.5
-  min_Radius: 0.1
+--- !u!114 &5574810168679611896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2762189273162876150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af7d30023e4a07e48ba47c0d70c0a44d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _is_strobing: 0
+  Strobing: {fileID: 11400000, guid: d4184757f8c03874aa120258014a5a0e, type: 2}
 --- !u!1001 &14873481888657911
 PrefabInstance:
   m_ObjectHideFlags: 0

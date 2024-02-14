@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: "\u0423\u041B\u0417-1"
   childNodes: []
-  Prefab: {fileID: 0}
+  Prefab: {fileID: 5208742456533068661, guid: 621b2fc2c3d9bbe489a7af4b00453286, type: 3}

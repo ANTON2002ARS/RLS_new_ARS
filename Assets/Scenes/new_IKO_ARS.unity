@@ -10341,8 +10341,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 80, y: -19.000011}
-  m_SizeDelta: {x: 190, y: 24}
+  m_AnchoredPosition: {x: 80.91, y: -79}
+  m_SizeDelta: {x: 220.25, y: 66.35}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1352117692
 MonoBehaviour:
@@ -10390,12 +10390,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 916559460}
         m_TargetAssemblyTypeName: IKO_Controll, Assembly-CSharp
-        m_MethodName: Check_Interference
-        m_Mode: 3
+        m_MethodName: Test_B
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 5
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -13883,6 +13883,8 @@ MonoBehaviour:
   OpenIkoButton: {fileID: 1638230792}
   _iko: {fileID: 916559460}
   Check: {fileID: 570974134}
+  InterferenceFolder: {fileID: 921277902}
+  list_answer: {fileID: 11400000, guid: f0ea46f5d325a9e41b7086defea4dccc, type: 2}
   Tooltip: {fileID: 1074668872}
   TooltipDelay: 0.8
   CommandList:

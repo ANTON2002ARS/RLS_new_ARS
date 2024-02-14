@@ -45,8 +45,7 @@ public class Body_Interference : MonoBehaviour
                 Debug.Log("TAG not find");
                 break;           
         }   
-        Debug.Log("position:" + this.transform.position);   
+        Debug.Log("position Interference: " + this.transform.position);   
     }
-
-    
+       
 }
