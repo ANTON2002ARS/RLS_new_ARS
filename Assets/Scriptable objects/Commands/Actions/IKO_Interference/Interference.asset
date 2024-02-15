@@ -34,6 +34,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bb028e7330879104096dd6e9aedd23c8, type: 2}
   - {fileID: 11400000, guid: 8e0e6f3e061ce7746930b236069f3b1e, type: 2}
   Number_5: 4
-  Actions_Resplmp:
-  - {fileID: 11400000, guid: bb028e7330879104096dd6e9aedd23c8, type: 2}
-  - {fileID: 11400000, guid: 8e0e6f3e061ce7746930b236069f3b1e, type: 2}
+  Actions_Response: []

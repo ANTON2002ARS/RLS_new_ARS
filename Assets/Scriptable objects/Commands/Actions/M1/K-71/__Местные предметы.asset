@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ed20cccbabc5074c9c79d5ea0f863e3, type: 3}
-  m_Name: K-71_ourside_foca_KBB
+  m_Name: "__\u041C\u0435\u0441\u0442\u043D\u044B\u0435 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B"
   m_EditorClassIdentifier: 
   ActionName: "\u041C\u0435\u0441\u0442\u043D\u044B\u0435 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B"
   isUnordored: 0

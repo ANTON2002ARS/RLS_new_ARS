@@ -211,10 +211,10 @@ public class GameManager : MonoBehaviour
     }
 
     // Проверка помехи на избавление \\
-    public void Check_Interference( string tag)
+    public bool Check_Interference( string tag)
     {
         if (InterferenceFolder.childCount != 1)
-            return;
+            return false;
         Action[] req = null;
         switch (tag)
         {
@@ -237,24 +237,39 @@ public class GameManager : MonoBehaviour
                 Debug.Log("not find");
                 break;
         }
-
+                        
+        if (actions == null)
+            return false;
 
         if (actions.Count != req.Length)
-            return;
+            return false;
 
         for (int i = 0; i < actions.Count; i++)
         {
-            if (req[i].name != actions[i].name)
-                return;
+            if (req[i].ActionName != actions[i].ActionName)
+            {
+                Debug.Log("Error:");
+                return false;
+            }
+
+            Debug.Log(actions[i].name);
         }
 
-        if (actions.Any(a => !a.IsInRequiredState()))
+        /*if (actions.Any(a => !a.IsInRequiredState()))
         {
             Debug.Log("Fail on req state");            
             return;
-        }
-        GameObject interfence = InterferenceFolder.GetChild(0).gameObject;
+        }*/
+       
+        GameObject interfence = InterferenceFolder.GetChild(0).gameObject;      
         Destroy(interfence);
+
+        actions.Clear();
+        return true;
+    }
+    public void Clear_Action()
+    {
+        actions.Clear();
     }
 
     public List<Action> GetAction()

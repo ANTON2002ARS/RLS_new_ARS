@@ -6,8 +6,14 @@ public class K71 : AbstractBlock
 {
     [SerializeField]
     private MultistateToggle _switch_mode_toggle;
+
+    
     [SerializeField]
     private MultistateToggleAction _switch_mode_action;
+
+    /*[SerializeField]
+    private ToggleAction _switch_mode_action;*/
+
 
     [Header("Actions")]
     public ToggleAction focal_dist_action;

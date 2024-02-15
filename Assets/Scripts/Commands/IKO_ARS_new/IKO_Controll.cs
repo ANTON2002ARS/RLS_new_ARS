@@ -130,7 +130,9 @@ public class IKO_Controll : MonoBehaviour
     private bool _hasStarted;
     public string Str_Mistakes = null;
     // Список всех появившихся целей на ико \\
-    public static List<GameObject> Targets = new List<GameObject>();    
+    public static List<GameObject> Targets = new List<GameObject>();
+    // Список помех \\
+    public static List<Body_Interference> Interferenses_ = new List<Body_Interference>();
     [Header("Mistakes Check")]
     // сбор ошибок \\
     [SerializeField]
@@ -213,12 +215,7 @@ public class IKO_Controll : MonoBehaviour
         angles.z += LineRotationSpeed * Time.deltaTime;
         LineObject.transform.localEulerAngles = angles;
 
-        //проверяем на избавление от помехи\\
-       /* if (_interferense_tag != null)
-        {
-            GameManager.Instance.Check_Interference(tag);
-        }*/
-
+        
         for (int i = 0; i < Targets.Count; i++)
         {
             if (Targets[i] == null)
@@ -340,8 +337,8 @@ public class IKO_Controll : MonoBehaviour
         _ikoPanel.interactable = false;
         _ikoPanel.blocksRaycasts = false;
     }
-    // Стробирование антенны \\
-    
+
+    // Стробирование антенны \\    
     public void Start_Strobing()
     {        
         // Вращение линии \\
@@ -360,13 +357,20 @@ public class IKO_Controll : MonoBehaviour
                 Body_Passive._is_strobing = true;        
     }
 
-    public void Test_B()
+    public void Check_Interference_Bloks()
     {
-        var A = GameManager.Instance.GetAction();
-        foreach (var item in A)
+        //проверяем на избавление от помехи\\       
+        if (_interferense_tag != null)
         {
-            Debug.Log(item.ActionName);
+
+            if (GameManager.Instance.Check_Interference(_interferense_tag))
+            {
+                Debug.Log("Ошибка");
+                Report.text = "Не правильное избавление от помех";
+                Report.color = Color.red;
+            }                
         }
+        GameManager.Instance.Clear_Action();
 
     }
 
@@ -482,8 +486,8 @@ public class IKO_Controll : MonoBehaviour
             Report.color = Color.green;
             // Цель проверена \\
             Targets[choice_target].GetComponent<Body_Target>().Check_is_Group = true;
-        }
-            
+        }           
+
     }
       
     
@@ -674,36 +678,34 @@ public class IKO_Controll : MonoBehaviour
 
     public void Generate_Interference()
     {
-        if (InterferenceFolder.transform.childCount != 0)
-        {
-            Report.text = Str_Mistakes = "ТЕСТ НЕ ПРОЙДЕН, ошибка не избавился от помех";
-            Report.color = Color.red;
-            Mistakes = Max_Mistakes;            
-        }       
+        GameObject Interferense;
         //Random.Range(0, 5)
         switch (Random.Range(0, 5))
         {
             case 0:
-                Instantiate(Passive_Prefab[Random.Range(0, Passive_Prefab.Count)], InterferenceFolder);
+                Interferense = Instantiate(Passive_Prefab[Random.Range(0, Passive_Prefab.Count)], InterferenceFolder);
                 _interferense_tag = "PASSIVE";
                 break;
             case 1:
-                Instantiate(From_local_Prefab[Random.Range(0, From_local_Prefab.Count)], InterferenceFolder);
+                Interferense = Instantiate(From_local_Prefab[Random.Range(0, From_local_Prefab.Count)], InterferenceFolder);
                 _interferense_tag = "FROM_LOCAL";
                 break;
             case 3:
-                Instantiate(NIP_Prefab[Random.Range(0, NIP_Prefab.Count)], InterferenceFolder);
+                Interferense = Instantiate(NIP_Prefab[Random.Range(0, NIP_Prefab.Count)], InterferenceFolder);
                 _interferense_tag = "NIP";
                 break;
             case 4:
-                Instantiate(Active_noise_Prefab[Random.Range(0, Active_noise_Prefab.Count)], InterferenceFolder);
+                Interferense = Instantiate(Active_noise_Prefab[Random.Range(0, Active_noise_Prefab.Count)], InterferenceFolder);
                 _interferense_tag = "ACTIVE_NOISE";
                 break;
             default:
-                Instantiate(Response_Prefab[Random.Range(0, Response_Prefab.Count)], InterferenceFolder);
+                Interferense = Instantiate(Response_Prefab[Random.Range(0, Response_Prefab.Count)], InterferenceFolder);
                 _interferense_tag = "RESPONSE";
                 break;
-        }        
+        }
+
+        //Interferense.GetComponent<Body_Interference>().tag = _interferense_tag;
+        //Interferenses_.Add(Interferense.GetComponent<Body_Interference>());        
     }
 
     
@@ -714,6 +716,9 @@ public class IKO_Controll : MonoBehaviour
             return;
 
         GameObject interference = InterferenceFolder.GetChild(0).gameObject;
+        
+        //GameManager.Instance.Check_Interference(_interferense_tag);
+
         switch (namber_button)
         {
             case 0:
@@ -721,7 +726,7 @@ public class IKO_Controll : MonoBehaviour
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
                     Report.color = Color.green;
-                    Destroy(interference);
+                    //Destroy(interference);
                     return;
                 }
                 break;
@@ -730,7 +735,7 @@ public class IKO_Controll : MonoBehaviour
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
                     Report.color = Color.green;
-                    Destroy(interference);
+                    //Destroy(interference);
                     return;
                 }
                 break;
@@ -739,7 +744,7 @@ public class IKO_Controll : MonoBehaviour
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
                     Report.color = Color.green;
-                    Destroy(interference);
+                    //Destroy(interference);
                     return;
                 }
                 break;
@@ -748,7 +753,7 @@ public class IKO_Controll : MonoBehaviour
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
                     Report.color = Color.green;
-                    Destroy(interference);
+                    //Destroy(interference);
                     return;
                 }
                 break;
@@ -757,7 +762,7 @@ public class IKO_Controll : MonoBehaviour
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
                     Report.color = Color.green;
-                    Destroy(interference);
+                    //Destroy(interference);
                     return;
                 }
                 break;            

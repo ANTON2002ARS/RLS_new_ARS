@@ -23,6 +23,15 @@ public class Domain : MonoBehaviour
             return;        
         image.SetActive(true);
            
+        if(GetComponentInParent<Body_Interference>().Check_work == true)
+        {
+            Canvas.alpha -= 0.4f;
+            if(Canvas.alpha < 0.2f)
+            {
+                GetComponentInParent<Body_Interference>().Delete();
+            }
+        }
+
         if(this.tag == "PASSIVE" && Body_Passive._is_strobing == true)            
         {
             Canvas.alpha -= 0.4f;           
