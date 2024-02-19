@@ -22,6 +22,8 @@ TagManager:
   - NIP
   - PASSIVE
   - RESPONSE
+  - _DOMAIN_
+  - MAIN
   layers:
   - Default
   - TransparentFX

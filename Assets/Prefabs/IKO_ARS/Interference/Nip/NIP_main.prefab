@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1635245904649033549}
   m_Layer: 5
   m_Name: NIP_main
-  m_TagString: Untagged
+  m_TagString: _DOMAIN_
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -123,6 +123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 2358081883463478249}
+  Canvas: {fileID: 3858420417359079161}
 --- !u!1 &2358081883463478249
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,6 +135,7 @@ GameObject:
   - component: {fileID: 6152225567260496541}
   - component: {fileID: 6215263757418489079}
   - component: {fileID: 4877726982431223689}
+  - component: {fileID: 3858420417359079161}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -198,3 +200,15 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &3858420417359079161
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2358081883463478249}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

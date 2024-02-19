@@ -132,7 +132,7 @@ public class IKO_Controll : MonoBehaviour
     // Список всех появившихся целей на ико \\
     public static List<GameObject> Targets = new List<GameObject>();
     // Список помех \\
-    public static List<Body_Interference> Interferenses_ = new List<Body_Interference>();
+    public static Stack<Body_Interference> Interferenses_ = new Stack<Body_Interference>();
     [Header("Mistakes Check")]
     // сбор ошибок \\
     [SerializeField]
@@ -156,18 +156,14 @@ public class IKO_Controll : MonoBehaviour
        
     [Header("Strob control")]
     [SerializeField]
-    private GameObject _strobContainer;
-    [SerializeField]
-    private Slider _strobSlider;
+    private GameObject _strobContainer;    
     [SerializeField]
     [Range(0, 1)]
     private float _strobTolerance;
     [SerializeField]
     private float _interferenceFadeDist;
     [SerializeField]
-    private float _minInterferenceBrightness;
-    [SerializeField]
-    private ActionIkoCheck _strobCheckAction;
+    private float _minInterferenceBrightness;    
     
     public static Vector3 IkoCenter => Instance?.LineObject.transform.position ?? Vector3.zero;
         
@@ -185,9 +181,7 @@ public class IKO_Controll : MonoBehaviour
     private float interval = 20f;
     private float timer = 0f;
     // Выбраная цель\\
-    private int choice_target;
-
-    private string _interferense_tag;
+    private int choice_target;    
 
     private void Awake()
     {
@@ -214,11 +208,10 @@ public class IKO_Controll : MonoBehaviour
         var lastAngle = angles.z;
         angles.z += LineRotationSpeed * Time.deltaTime;
         LineObject.transform.localEulerAngles = angles;
-
-        
+                
         for (int i = 0; i < Targets.Count; i++)
         {
-            if (Targets[i] == null)
+            if (Targets[i] == null || Targets[i].GetComponent<Body_Target>().End_Player == true)
             {
                 Text_targets_fix[i].gameObject.SetActive(false);
                 Report.text = Str_Mistakes = "Удаление цели";
@@ -252,7 +245,7 @@ public class IKO_Controll : MonoBehaviour
             if(is_quentity < Quentity_Targets_need)
             {
                 // создаем цель \\            
-                Generate_Target(0, Random.Range(0, 2) == 1);
+                Generate_Target();
                 // создаем помеху\\
                 Generate_Interference();
                 Report.text = Str_Mistakes = "Появление новой цели," +
@@ -267,7 +260,7 @@ public class IKO_Controll : MonoBehaviour
         }
 
         // проходит тест если все цели отработаны \\
-        if(Targets.Count == 0)
+        if(Targets.Count == 0 && _quentity_kill == Quentity_Targets_need)
         {
             _hasStarted = false;
             GameManager.Instance.PassCheck();
@@ -320,22 +313,44 @@ public class IKO_Controll : MonoBehaviour
     {
         Grid.alpha = value;
     }
-
-
+    
+    
+    private bool _close_Iko;
     public void OpenIko()
-    {
+    {        
         _ikoPanel.alpha = 1.0f;
         _ikoPanel.interactable = true;
-        _ikoPanel.blocksRaycasts = true;
+        _ikoPanel.blocksRaycasts = true;    
+ 
+        if (InterferenceFolder.transform.childCount > 0)
+            Check_Interference_Bloks();
+
+        GameManager.Instance.Reset_Blocks_Action();
+
+        if(_close_Iko && !_stop_antenna)
+        {            
+            Debug.Log("START time");
+            _hasStarted = true;
+        }
+                 
     }
 
-
+    // На всякий лень\\
     public void CloseIko()
-    {
-        //Stop_timer();
+    {              
         _ikoPanel.alpha = 0.0f;
         _ikoPanel.interactable = false;
         _ikoPanel.blocksRaycasts = false;
+    }
+    public void Close_IKO()
+    {
+        if (_hasStarted)
+        {
+            Debug.Log("STOP time");
+            _close_Iko = true;
+            _hasStarted = false;
+        }
+        GameManager.Instance.Clear_Action();
     }
 
     // Стробирование антенны \\    
@@ -349,29 +364,40 @@ public class IKO_Controll : MonoBehaviour
         LineObject.transform.localEulerAngles = angles;
 
         if (InterferenceFolder.transform.childCount != 1)
-            return; ;   
+            return; ;
 
-        Transform Interference = InterferenceFolder.GetChild(0);       
+        var interference = Interferenses_.Peek().gameObject;
         
-        if(Interference.tag == "PASSIVE")
+        if(interference.tag == "PASSIVE")
                 Body_Passive._is_strobing = true;        
     }
-
+    
+    //проверяем на избавление от помехи\\
     public void Check_Interference_Bloks()
     {
-        //проверяем на избавление от помехи\\       
-        if (_interferense_tag != null)
+        if (Interferenses_.Count < 1)
+            return;
+
+        if (Interferenses_.Peek() == null)
+            return;
+
+        Debug.Log("TAG: " + Interferenses_.Peek().gameObject.tag);
+
+        if (!GameManager.Instance.Check_Interference(Interferenses_.Peek().gameObject.tag))
         {
-
-            if (GameManager.Instance.Check_Interference(_interferense_tag))
-            {
-                Debug.Log("Ошибка");
-                Report.text = "Не правильное избавление от помех";
-                Report.color = Color.red;
-            }                
+            Mistakes++;
+            Report.text = "Ошибка, не правильное избавление от помех, кол-во ошибок: " + Mistakes;
+            Report.color = Color.red;
         }
-        GameManager.Instance.Clear_Action();
+        else
+        {
+            Report.text = "Правильно, избавление от помех, кол-во ошибок: " + Mistakes;
+            Report.color = Color.green;
+        }
 
+        Interferenses_.Pop().Check_work = true;
+       
+        //GameManager.Instance.Clear_Action();
     }
 
 
@@ -387,13 +413,10 @@ public class IKO_Controll : MonoBehaviour
     }
 
 
-    public void Generate_Target(int namber_target, bool is_Our)
+    public void Generate_Target()
     {
         GameObject target = Instantiate(Target_Flying, TargetsFolder);
-        target.transform.SetParent(TargetsFolder.transform);
-        Body_Target body = target.GetComponent<Body_Target>();        
-        body.is_Our = is_Our;
-        body.Namber_on_IKO = namber_target;
+        target.transform.SetParent(TargetsFolder.transform);        
         // добавляем ноную цель \\
         is_quentity++;
         // добавляем цель в начало списка \\
@@ -405,7 +428,7 @@ public class IKO_Controll : MonoBehaviour
             {
                 Report.text = Str_Mistakes = "ТЕСТ НЕ ПРОЙДЕН, ошибка не запросил цель";
                 Report.color = Color.red;
-                Mistakes = Max_Mistakes;
+                Mistakes = Max_Mistakes;                
             }
         }
         // Получаем существующую коллекцию опций
@@ -533,8 +556,7 @@ public class IKO_Controll : MonoBehaviour
         }
         Choice_target.options.Clear();
         Choice_target.GetComponentInChildren<Text>().text = null;
-        // помеху убераем\\
-        _interferense_tag = null;
+        // помеху убераем\\        
         while (InterferenceFolder.childCount > 0)
             DestroyImmediate(InterferenceFolder.GetChild(0).gameObject);  
         // линию в начало\\            
@@ -560,18 +582,18 @@ public class IKO_Controll : MonoBehaviour
         Report.text = Str_Mistakes = "  НАЧАЛО БОЕВОЕ РАБОТЫ  ";
         Report.color = Color.black;
         // создаем цель \\
-        Generate_Target(0, true);
+        Generate_Target();
         // создаем помеху\\
         Generate_Interference();
     }
 
 
-    private bool _stop;
+    private bool _stop_antenna;    
     public void Stop_timer()
     {        
-        if (!_stop)
+        if (!_stop_antenna)
         {
-            _stop = true;
+            _stop_antenna = true;
             Report.text = "Пауза";
             Report.color = Color.black;
             _hasStarted = false;
@@ -582,7 +604,7 @@ public class IKO_Controll : MonoBehaviour
         }
         else
         {
-            _stop = false;
+            _stop_antenna = false;
             Report.text = "Продолжение";
             Report.color = Color.black;
             if(_hasStarted == false && Targets.Count >= 1)
@@ -595,7 +617,7 @@ public class IKO_Controll : MonoBehaviour
         Scrobing_Line.value = 0;
     }
     
-    
+        
     private int Find_Azimuth(Vector2 of_Target)
     {
         // Вычисляем угол между векторами \\
@@ -654,15 +676,17 @@ public class IKO_Controll : MonoBehaviour
 
         if (!is_Within_Range(azimuth))
         {
-            Report.text = "ОШИБКА Азимута";
+            Report.text = "ОШИБКА Азимута, ожидалось: " + azimuth;
             Report.color = Color.red;
             Mistakes++;
             return;
-        }    
+        }
+
+        float ring_target = (float)(of_target.magnitude * 15 / 4);
         
-        if(ring != (int)(of_target.magnitude * 15 / 4))
+        if (ring != Mathf.Round(ring_target))
         {
-            Report.text = "ОШИБКА СЕКТОРА, правильно: " + (int)(of_target.magnitude * 15 / 4);
+            Report.text = "ОШИБКА СЕКТОРА, правильно: " + Mathf.Round(ring_target);
             Report.color = Color.red;
             Mistakes++;
             return;
@@ -679,45 +703,62 @@ public class IKO_Controll : MonoBehaviour
     public void Generate_Interference()
     {
         GameObject Interferense;
-        //Random.Range(0, 5)
-        switch (Random.Range(0, 5))
+        //Random.Range(0, 4)
+        string _interferense_tag;
+        
+        switch (Random.Range(0, 4))
         {
             case 0:
-                Interferense = Instantiate(Passive_Prefab[Random.Range(0, Passive_Prefab.Count)], InterferenceFolder);
+                Interferense = Instantiate(Passive_Prefab[Random.Range(0, Passive_Prefab.Count)], InterferenceFolder);                
                 _interferense_tag = "PASSIVE";
                 break;
             case 1:
-                Interferense = Instantiate(From_local_Prefab[Random.Range(0, From_local_Prefab.Count)], InterferenceFolder);
+                Interferense = Instantiate(From_local_Prefab[Random.Range(0, From_local_Prefab.Count)], InterferenceFolder);                
                 _interferense_tag = "FROM_LOCAL";
                 break;
-            case 3:
-                Interferense = Instantiate(NIP_Prefab[Random.Range(0, NIP_Prefab.Count)], InterferenceFolder);
+            case 2:
+                Interferense = Instantiate(NIP_Prefab[Random.Range(0, NIP_Prefab.Count)], InterferenceFolder);                
                 _interferense_tag = "NIP";
                 break;
-            case 4:
-                Interferense = Instantiate(Active_noise_Prefab[Random.Range(0, Active_noise_Prefab.Count)], InterferenceFolder);
+            case 3:
+                Interferense = Instantiate(Active_noise_Prefab[Random.Range(0, Active_noise_Prefab.Count)], InterferenceFolder);                
                 _interferense_tag = "ACTIVE_NOISE";
                 break;
             default:
-                Interferense = Instantiate(Response_Prefab[Random.Range(0, Response_Prefab.Count)], InterferenceFolder);
+                Interferense = Instantiate(Response_Prefab[Random.Range(0, Response_Prefab.Count)], InterferenceFolder);                
                 _interferense_tag = "RESPONSE";
                 break;
         }
 
-        //Interferense.GetComponent<Body_Interference>().tag = _interferense_tag;
-        //Interferenses_.Add(Interferense.GetComponent<Body_Interference>());        
+        if(Interferenses_.Count > 0 && Interferenses_.Peek() != null)
+        {
+            var OLD_interferense = Interferenses_.Peek();
+            
+            if(OLD_interferense.GetComponent<Body_Interference>().Check_Test == false)
+            {
+                Mistakes++;
+                Report.text = Str_Mistakes = "ОШИБКА, не определил старою помеху";
+                Report.color = Color.red;
+            }
+            
+        }
+
+        Interferense.GetComponent<Body_Interference>().tag = _interferense_tag;
+        Interferenses_.Push(Interferense.GetComponent<Body_Interference>());           
     }
 
     
     public void Check_Interference(int namber_button)
     {
         if (!_hasStarted) return;
-        if (InterferenceFolder.transform.childCount == 0)
+        if (InterferenceFolder.transform.childCount == 0 || Interferenses_.Count == 0)
+            return;
+              
+        Body_Interference interference = Interferenses_.Peek();
+        if (interference == null)
             return;
 
-        GameObject interference = InterferenceFolder.GetChild(0).gameObject;
-        
-        //GameManager.Instance.Check_Interference(_interferense_tag);
+        interference.Check_Test = true;
 
         switch (namber_button)
         {
@@ -725,8 +766,7 @@ public class IKO_Controll : MonoBehaviour
                 if(interference.tag == "PASSIVE")
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
-                    Report.color = Color.green;
-                    //Destroy(interference);
+                    Report.color = Color.green;                    
                     return;
                 }
                 break;
@@ -734,8 +774,7 @@ public class IKO_Controll : MonoBehaviour
                 if (interference.tag == "FROM_LOCAL")
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
-                    Report.color = Color.green;
-                    //Destroy(interference);
+                    Report.color = Color.green;                    
                     return;
                 }
                 break;
@@ -743,8 +782,7 @@ public class IKO_Controll : MonoBehaviour
                 if (interference.tag == "NIP")
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
-                    Report.color = Color.green;
-                    //Destroy(interference);
+                    Report.color = Color.green;                    
                     return;
                 }
                 break;
@@ -752,8 +790,7 @@ public class IKO_Controll : MonoBehaviour
                 if (interference.tag == "ACTIVE_NOISE")
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
-                    Report.color = Color.green;
-                    //Destroy(interference);
+                    Report.color = Color.green;                    
                     return;
                 }
                 break;
@@ -761,8 +798,7 @@ public class IKO_Controll : MonoBehaviour
                 if (interference.tag == "RESPONSE")
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
-                    Report.color = Color.green;
-                    //Destroy(interference);
+                    Report.color = Color.green;                    
                     return;
                 }
                 break;            
@@ -772,6 +808,15 @@ public class IKO_Controll : MonoBehaviour
         Report.color = Color.red;        
     }
 
+
+    public void Test_children_mode()
+    {        
+        List<Action> a = GameManager.Instance.GetAction();
+        foreach (var item in a)
+        {
+            Debug.Log(item.ActionName);
+        }
+    }
 }
 
 [System.Serializable]

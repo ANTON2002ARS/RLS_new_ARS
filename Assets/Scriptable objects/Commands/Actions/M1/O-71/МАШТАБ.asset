@@ -15,6 +15,6 @@ MonoBehaviour:
   ActionName: "\u041C\u0410\u0428\u0422\u0410\u0411"
   isUnordored: 0
   relatedActionGroup: {fileID: 0}
-  _defaultState: A
-  _requiredState: S
-  CurrentState: A
+  _defaultState: 1
+  _requiredState: 
+  CurrentState: 75

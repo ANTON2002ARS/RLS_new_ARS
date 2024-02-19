@@ -343,7 +343,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 12130e2e4516f114e855594a57e0755b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d22e80ab7b83b654481b7ed2f163c417, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -846,19 +846,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _states:
   - DirectionBtn: {fileID: 4789869443701331238}
-    StateName: 1
+    StateName: "\u0412\u041D\u0415\u0428.\u0424\u0410\u0417\u0418\u0420"
     DisplayObject: {fileID: 5721408604234124775}
     StatePos: {fileID: 7597511068807719947}
     angle: 0
     index: 0
   - DirectionBtn: {fileID: 367057581011701767}
-    StateName: 2
+    StateName: "\u041C\u0415\u0421\u0422.\u041F\u0420\u0415\u0414\u041C"
     DisplayObject: {fileID: 6780888761810966025}
     StatePos: {fileID: 3596808766412911738}
     angle: 0
     index: 0
   - DirectionBtn: {fileID: 2200286484011554882}
-    StateName: 3
+    StateName: "\u041A\u0412\u0412"
     DisplayObject: {fileID: 8211008730130983884}
     StatePos: {fileID: 677881140877044044}
     angle: 0

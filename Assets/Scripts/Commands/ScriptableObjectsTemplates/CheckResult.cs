@@ -25,8 +25,9 @@ public class CheckResult : MonoBehaviour
         gameObject.SetActive(true);
         PassMessage.SetActive(true);
 
-        if (IKO_Controll.Instance != null)
-            Report_text.text = IKO_Controll.Instance.Str_Mistakes;
+        if (IKO_Controll.Instance == null)
+            return;
+        Report_text.text = IKO_Controll.Instance.Str_Mistakes + " Ошибок: " + IKO_Controll.Instance.Mistakes;
     }
 
     public void ShowFailMessage()
@@ -34,8 +35,10 @@ public class CheckResult : MonoBehaviour
         gameObject.SetActive(true);
         FailMessage.SetActive(true);
 
-        if (IKO_Controll.Instance != null)
-            Report_text.text = IKO_Controll.Instance.Str_Mistakes;
+        if (IKO_Controll.Instance == null)
+            return;
+        Report_text.text = IKO_Controll.Instance.Str_Mistakes + " Ошибок: " + IKO_Controll.Instance.Mistakes;
+
     }
 
     public void Close()

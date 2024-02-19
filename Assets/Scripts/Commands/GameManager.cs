@@ -12,6 +12,14 @@ public class GameManager : MonoBehaviour
     public GameObject RoleSelect;
     public ActionsPanel MainPanel;
     public CheckResult CheckResultPanel;
+    [SerializeField]
+    private Text Report_Blocks;
+    public string Repotr_Set_Text
+    {
+        set => Report_Blocks.text = value;        
+    }
+
+    public static bool Is_Reset_State;
 
     [Header("IKO")]
     public GameObject OpenIkoButton;
@@ -213,8 +221,9 @@ public class GameManager : MonoBehaviour
     // Проверка помехи на избавление \\
     public bool Check_Interference( string tag)
     {
-        if (InterferenceFolder.childCount != 1)
+        if (InterferenceFolder.childCount == 0)
             return false;
+
         Action[] req = null;
         switch (tag)
         {
@@ -237,9 +246,22 @@ public class GameManager : MonoBehaviour
                 Debug.Log("not find");
                 break;
         }
-                        
+
+        Debug.Log("Check: tag= " + tag); 
+        
         if (actions == null)
             return false;
+
+        Debug.Log("ActionName:");
+        foreach (var item in actions)
+        {
+            Debug.Log(item.ActionName);
+        }
+        Debug.Log("reg:");
+        foreach (var item in req)
+        {
+            Debug.Log(item.ActionName);
+        }
 
         if (actions.Count != req.Length)
             return false;
@@ -261,16 +283,26 @@ public class GameManager : MonoBehaviour
             return;
         }*/
        
-        GameObject interfence = InterferenceFolder.GetChild(0).gameObject;      
-        Destroy(interfence);
-
+        
         actions.Clear();
         return true;
     }
     public void Clear_Action()
     {
+        if (actions.Count == 0)
+            return;        
         actions.Clear();
     }
+
+    public void Reset_Blocks_Action()
+    {
+        Clear_Action();
+        MainPanel.UpdateCurrentBlockUI(true);
+        MainPanel.OpenDefaultBlock();
+        Report_Blocks.text = "Состояние сброшено";
+    }
+
+
 
     public List<Action> GetAction()
     {
@@ -344,7 +376,7 @@ public class GameManager : MonoBehaviour
           
         var last = actions.LastOrDefault();
 
-        Debug.Log("Name: " + a.name);
+        Debug.Log("Add, Name: " + a.name);
         
         if (a.isUnordored)
         {
@@ -372,14 +404,16 @@ public class GameManager : MonoBehaviour
             actions.Remove(last);
             if (!a.IsInDefaultState() || !a.RemoveIfMatchingDefaultState)
             {
+                // Добавление в список действие \\
                 actions.Add(a);
-                Debug.Log("add");
+                Report_Blocks.text = "Выбор состояние: " + a.ActionName;
             }                
         }
         else
         {
+            // Добавление в список действие \\
             actions.Add(a);
-            Debug.Log("add");
+            Report_Blocks.text = "Выбор состояние: " + a.ActionName;
         }
     }
     

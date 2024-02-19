@@ -6,6 +6,7 @@ public class Black_Holler : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // Обьекты рядом с РЛС что делать \\
         switch (collision.tag)
         {
             case "_OUR_":
@@ -28,7 +29,10 @@ public class Black_Holler : MonoBehaviour
                 break;
             case "PASSIVE":
                 Destroy(collision.gameObject);
-                break; 
+                break;
+            case "_DOMAIN_":
+                Destroy(collision.gameObject);
+                break;
         }
 
     }

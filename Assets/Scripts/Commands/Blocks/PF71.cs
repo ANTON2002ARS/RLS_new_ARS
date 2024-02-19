@@ -16,26 +16,32 @@ public class PF71 : AbstractBlock
     public Toggle anode;
     
 
-    public void HighVoltageAction(bool state) => TriggerEventInGM(_diferences_action, state);
-    public void PowerAction(bool state) => TriggerEventInGM(_fp_action, state);
-    public void RotationAction(bool state) => TriggerEventInGM(_anode_action, state);
+    public void Of_Action_1(bool state) => TriggerEventInGM(_diferences_action, state);
+    public void Of_Action_2(bool state) => TriggerEventInGM(_fp_action, state);
+    public void Of_Action_3(bool state) => TriggerEventInGM(_anode_action, state);
     
 
     private void Start()
     {
         UpdateUI(false);
 
-        diferences.OnToggle.AddListener(HighVoltageAction);
-        fp.OnToggle.AddListener(PowerAction);
-        anode.OnToggle.AddListener(RotationAction);
+        diferences.OnToggle.AddListener(Of_Action_1);
+        fp.OnToggle.AddListener(Of_Action_2);
+        anode.OnToggle.AddListener(Of_Action_3);
     }
 
     public override void UpdateUI(bool clearState)
     {
+        if (clearState)
+        {
+            _diferences_action.currentState = _diferences_action.DefaultState;
+            _fp_action.currentState = _fp_action.DefaultState;
+            _anode_action.currentState = _anode_action.DefaultState;
+        }
+
         diferences.SetStateNoEvent(_diferences_action.currentState);
         fp.SetStateNoEvent(_fp_action.currentState);
-        anode.SetStateNoEvent(_anode_action.currentState);
-        
+        anode.SetStateNoEvent(_anode_action.currentState);        
     }
 
     private void TriggerEventInGM(ToggleAction a, bool state)

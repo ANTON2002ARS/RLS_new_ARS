@@ -15,19 +15,19 @@ public class Domain : MonoBehaviour
     {
         image.SetActive(false);
     }
-        
+    
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.tag != "Line")
             return;        
         image.SetActive(true);
            
-        if(GetComponentInParent<Body_Interference>().Check_work == true)
+        if(GetComponentInParent<Body_Interference>() != null && GetComponentInParent<Body_Interference>().Check_work == true)
         {
-            Canvas.alpha -= 0.4f;
-            if(Canvas.alpha < 0.2f)
-            {
+            Canvas.alpha -= 0.2f;
+            if(Canvas.alpha < 0.01f)
+            {                
                 GetComponentInParent<Body_Interference>().Delete();
             }
         }

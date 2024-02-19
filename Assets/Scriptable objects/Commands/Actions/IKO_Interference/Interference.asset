@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Interference
   Number_1: 0
   Actions_Passive:
-  - {fileID: 11400000, guid: d4184757f8c03874aa120258014a5a0e, type: 2}
+  - {fileID: 11400000, guid: f80a73e74d249054bb4c86b220d1dfeb, type: 2}
   - {fileID: 11400000, guid: 8e0e6f3e061ce7746930b236069f3b1e, type: 2}
   Number_2: 1
   Actions_Local:
@@ -34,4 +34,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bb028e7330879104096dd6e9aedd23c8, type: 2}
   - {fileID: 11400000, guid: 8e0e6f3e061ce7746930b236069f3b1e, type: 2}
   Number_5: 4
-  Actions_Response: []
+  Actions_Response:
+  - {fileID: 11400000, guid: 911305565f31d0e4a8e4e82bd4bf6d3e, type: 2}

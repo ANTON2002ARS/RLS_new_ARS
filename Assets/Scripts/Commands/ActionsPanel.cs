@@ -182,6 +182,11 @@ public class ActionsPanel : MonoBehaviour
         CurrentBlock?.UpdateUI(clearState);
     }
 
+    public void UpdateCurrent()
+    {
+
+    }
+
     public void OpenDefaultBlock()
     {
         CurrentBlock = Instantiate(DefaultBlockPrefab);

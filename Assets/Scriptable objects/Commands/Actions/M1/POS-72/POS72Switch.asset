@@ -16,6 +16,6 @@ MonoBehaviour:
     \u0412\u043E\u043B\u043D"
   isUnordored: 0
   relatedActionGroup: {fileID: 0}
-  _defaultState: A
+  _defaultState: 1
   _requiredState: S
-  CurrentState: A
+  CurrentState: 1

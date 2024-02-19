@@ -250,8 +250,13 @@ MonoBehaviour:
     type: 3}
   Target_Single: {fileID: 1398136040468441618, guid: 5ca6b34b93e05f54d97953284f67db39,
     type: 3}
-  Quantity_point: 36
-  Quantity_Trace: 13
+  Target_Group_Our: {fileID: 1398136040468441618, guid: 7a3bc3ed729124b4ea4ccd90f6c51474,
+    type: 3}
+  Target_Group_Single: {fileID: 1398136040468441618, guid: 4d5c578d5715e4343aaf8678e8d8d3fd,
+    type: 3}
+  End_Player: 0
+  Quantity_point: 25
+  Quantity_Trace: 24
   flag_move: 0
   startPosition: {x: 0, y: 0}
   endPosition: {x: 0, y: 0}

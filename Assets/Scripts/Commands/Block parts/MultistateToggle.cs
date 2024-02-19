@@ -69,6 +69,8 @@ public class MultistateToggle : MonoBehaviour, IDragHandler
 
     public void Reset()
     {
+       // Debug.Log("Reset");
+
         _currentState = _defaultState;
         UpdateUI();
     }
@@ -96,4 +98,6 @@ public class MultistateToggle : MonoBehaviour, IDragHandler
         _currentState = _states.IndexOf(state);
         UpdateUI();
     }
+
+
 }

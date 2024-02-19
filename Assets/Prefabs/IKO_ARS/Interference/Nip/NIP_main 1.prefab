@@ -280,7 +280,7 @@ PolygonCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1532379679870972125}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -376,6 +376,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aec206272f1568c4db2830636c9c2748, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Check_work: 0
+  Check_Test: 0
+  Tag_: 
 --- !u!1001 &60997425674020002
 PrefabInstance:
   m_ObjectHideFlags: 0

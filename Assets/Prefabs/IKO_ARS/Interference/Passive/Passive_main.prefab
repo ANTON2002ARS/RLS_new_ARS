@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 1398345107019729549}
   m_Layer: 5
   m_Name: Passive_main
-  m_TagString: PASSIVE
+  m_TagString: _DOMAIN_
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

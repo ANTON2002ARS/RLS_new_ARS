@@ -28,6 +28,12 @@ public class POV71 : AbstractBlock
 
     public override void UpdateUI(bool clearState)
     {
+        if (clearState)
+        {
+            _light_action.currentState = _light_action.DefaultState;
+            _Peling_action.currentState = _Peling_action.DefaultState;
+        }
+
         light_toggle.SetStateNoEvent(_light_action.currentState);
         Peling_toggle.SetStateNoEvent(_Peling_action.currentState);
     }

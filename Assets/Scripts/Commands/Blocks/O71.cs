@@ -31,8 +31,8 @@ public class O71 : AbstractBlock
     public Toggle start_distation;
     public Toggle pin;
 
-    public void HighVoltageAction(bool state) => TriggerEventInGM( _start_distation_action, state);
-    
+    public void Of_Action_1(bool state) => TriggerEventInGM( _start_distation_action, state);
+    public void Of_Action_2(bool state) => TriggerEventInGM(_pin_action, state);
 
     private void Start()
     {
@@ -41,8 +41,8 @@ public class O71 : AbstractBlock
         in_valtage.OnStateChange += Handle_2;
         scale.OnStateChange += Handle_3;
 
-        start_distation.OnToggle.AddListener(HighVoltageAction);
-        pin.OnToggle.AddListener(HighVoltageAction);
+        start_distation.OnToggle.AddListener(Of_Action_1);
+        pin.OnToggle.AddListener(Of_Action_2);
 
     }
 
@@ -50,9 +50,13 @@ public class O71 : AbstractBlock
     {
         if (clearState)
         {
+            // «брасывание значение\\
             _our_phase_action.Reset();
             _in_valtage_action.Reset();
             _start_distation_action.Reset();
+
+            _start_distation_action.currentState = _pin_action.DefaultState;
+            _pin_action.currentState = _pin_action.DefaultState;
         }
 
         our_phase.SetStateNoEvent(_our_phase_action.CurrentState);

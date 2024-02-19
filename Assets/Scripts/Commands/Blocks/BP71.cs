@@ -27,8 +27,11 @@ public class BP71 : AbstractBlock
         GameManager.Instance.AddToState(a);
     }
 
-    public override void UpdateUI(bool _)
+    public override void UpdateUI(bool clearState)
     {
+        if (clearState)
+            Network.currentState = Network.DefaultState;
+
         NetworkTrigger.SetStateNoEvent(Network.currentState);
     }
 

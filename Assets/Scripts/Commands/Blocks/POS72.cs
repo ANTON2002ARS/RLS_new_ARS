@@ -17,23 +17,29 @@ public class POS72 : AbstractBlock
     [SerializeField]
     private string _strobModeName;
 
-    [Header("Actions")]
-    public ToggleAction HighVoltage;
-    public ToggleAction Power;
-    public ToggleAction Rotation;
-    public ToggleAction Speed;
+    [Header("Triggers and Actions")]
 
-    [Header("Triggers")]
     public Toggle_Button HighVoltageTrigger;
+    public ToggleAction HighVoltage_Action;    
+
     public Toggle_Button PowerTrigger;
-    public Toggle RotationTrigger;
+    public ToggleAction Power_Action;
+    
+    public Toggle RotationTrigger; 
+    public ToggleAction Rotation_Action;
+
     public Toggle SpeedTrigger;
+    public ToggleAction Speed_Action;
 
-    public void HighVoltageAction(bool state) => TriggerEventInGM(HighVoltage, state);
-    public void PowerAction(bool state) => TriggerEventInGM(Power, state);
-    public void RotationAction(bool state) => TriggerEventInGM(Rotation, state);
-    public void SpeedAction(bool state) => TriggerEventInGM(Speed, state);
+    public Toggle Blink;
+    public ToggleAction Blink_Action;
 
+
+    public void HighVoltageAction(bool state) => TriggerEventInGM(HighVoltage_Action, state);
+    public void PowerAction(bool state) => TriggerEventInGM(Power_Action, state);
+    public void RotationAction(bool state) => TriggerEventInGM(Rotation_Action, state);
+    public void SpeedAction(bool state) => TriggerEventInGM(Speed_Action, state);
+    public void BlinkAction(bool state) => TriggerEventInGM(Blink_Action, state);
 
     private void Start()
     {
@@ -45,22 +51,32 @@ public class POS72 : AbstractBlock
         PowerTrigger.OnToggle.AddListener(PowerAction);
         RotationTrigger.OnToggle.AddListener(RotationAction);
         SpeedTrigger.OnToggle.AddListener(SpeedAction);
+        Blink.OnToggle.AddListener(BlinkAction);        
     }
-
+   
 
     public override void UpdateUI(bool clearState)
     {
         if (clearState)
         {
+            // «брасывание значение\\
             _workModeAction.Reset();
             _switch_canals_action.Reset();
+
+            HighVoltage_Action.currentState = HighVoltage_Action.DefaultState;
+            Power_Action.currentState = Power_Action.DefaultState;
+            Rotation_Action.currentState = Rotation_Action.DefaultState;
+            Speed_Action.currentState = Speed_Action.DefaultState;
+            Blink_Action.currentState = Blink_Action.DefaultState;
         }
+
         _workModeToggle.SetStateNoEvent(_workModeAction.CurrentState);
         _switch_canals_toggle.SetStateNoEvent(_switch_canals_action.CurrentState);
-        HighVoltageTrigger.SetStateNoEvent(HighVoltage.currentState);
-        PowerTrigger.SetStateNoEvent(Power.currentState);
-        RotationTrigger.SetStateNoEvent(Rotation.currentState);
-        SpeedTrigger.SetStateNoEvent(Speed.currentState);
+        HighVoltageTrigger.SetStateNoEvent(HighVoltage_Action.currentState);
+        PowerTrigger.SetStateNoEvent(Power_Action.currentState);
+        RotationTrigger.SetStateNoEvent(Rotation_Action.currentState);
+        SpeedTrigger.SetStateNoEvent(Speed_Action.currentState);
+        Blink.SetStateNoEvent(Blink_Action.currentState);
     }
 
 

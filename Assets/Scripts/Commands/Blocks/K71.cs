@@ -35,7 +35,9 @@ public class K71 : AbstractBlock
         if (clearState)
         {
             _switch_mode_action.Reset();
+            focal_dist_action.currentState = focal_dist_action.DefaultState;
         }
+
         _switch_mode_toggle.SetStateNoEvent(_switch_mode_action.CurrentState);        
         focal_dist_toggle.SetStateNoEvent(focal_dist_action.currentState);
     }

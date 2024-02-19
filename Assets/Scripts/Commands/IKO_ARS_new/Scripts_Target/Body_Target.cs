@@ -8,13 +8,13 @@ public class Body_Target : MonoBehaviour
     [SerializeField]
     private float radius_spawn;// max 3.5f  
     // номер цели на ико \\
-    public int Namber_on_IKO = 0;
+    public int Namber_on_IKO;
     // Свой(true) или Чужой(false) \\    
     [HideInInspector]
     public bool is_Our;
     // Груповая(true) или Одиночная(false) \\
     [HideInInspector]
-    public bool _is_group = false;
+    public bool _is_group;
     // Высота цели над землей\\   
     public int Height;
     // Проверка на выполнение запроса цели \\
@@ -29,8 +29,17 @@ public class Body_Target : MonoBehaviour
     [SerializeField]
     private GameObject Target_Our;      // Свой
     [SerializeField]
-    private GameObject Target_Single;   // Чужой                                        
-    //private GameObject _target;     
+    private GameObject Target_Single;   // Чужой
+
+    [SerializeField]
+    private GameObject Target_Group_Our;        // Свой Группа
+    [SerializeField]
+    private GameObject Target_Group_Single;     // Чужой Группа
+
+    // Сама реальная цель \\
+    private GameObject main_target;
+    // Цель отыграла\\
+    public bool End_Player;
     // Количество точек перехода от начала к  концу \\
     [SerializeField]
     private int Quantity_point = 30;
@@ -45,7 +54,7 @@ public class Body_Target : MonoBehaviour
     [HideInInspector]
     public Vector2 endPosition;    // mix 2.4f
     // След триектории\\
-    private List<GameObject> trace_trajectories = new List<GameObject>();
+    private readonly List<GameObject> trace_trajectories = new List<GameObject>();
     
 
     private void Generat_vector_circle(float radius)
@@ -74,13 +83,14 @@ public class Body_Target : MonoBehaviour
     }
    
     
-    private void Create_Prefab()
+    private void Create_Prefab( GameObject target)
     {
         // создаем цель на ико \\            
-        //_target = Instantiate(is_Our ? Target_Our : Target_Single, this.transform, false);        
-        //_target.transform.SetParent(this.transform, false);
+        //is_Our ? Target_Our : Target_Single
+        main_target = Instantiate(target, this.transform, false);
+        main_target.transform.SetParent(this.transform, false);
         // не показовать до первого столкновение\\ 
-        //_target.SetActive(false);        
+        main_target.SetActive(false);        
     }   
 
     // номер шага \\
@@ -103,58 +113,98 @@ public class Body_Target : MonoBehaviour
         Generat_vector_circle(radius_spawn);       
         Height = Random.Range(4, 11) * 10;
         // начальная позиция \\
-        this.transform.position = startPosition;        
-       // Turn_on_IKO(this.gameObject);
+        this.transform.position = startPosition;
+        // Turn_on_IKO(this.gameObject);
+        // Выбор случайной цели \\
+        is_Our = Random.Range(0, 2) == 1;
+        _is_group = Random.Range(0, 2) == 1;
+        Namber_on_IKO = 0;
+
         if (is_Our)
-            this.tag = "_OUR_";
+        {
+            this.tag = "_OUR_";            
+            Create_Prefab(_is_group ? Target_Group_Our : Target_Our);
+        }            
         else
+        {
             this.tag = "_SINGLE_";
-       // Create_Prefab();              
+            Create_Prefab(_is_group ? Target_Group_Single : Target_Single);
+        }         
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         if(collision.tag == "Line" && flag_move == true)
-        {            
-            // Движемся по троектории на шаг \\
-            transform.position = Walk_line(_Namber_Step);            
-            // показовать \\
-            //_target.SetActive(true);
-            //Turn_on_IKO(_target);            
+        {
             // опускаем флаг \\
-            flag_move = false;                          
+            flag_move = false;
+            // Плавное удаление цели\\
+            if (_Namber_Step > Quantity_point)
+            {
+                End_Player = true;
+                trace_trajectories[0].SetActive(true);
+                trace_trajectories.Clear();
+                if (main_target == null)
+                    return;
+                // Убираем главною цель\\
+                Destroy(main_target);
+
+                // Проверка на запросы целей перед удалением\\
+                if (!Check_our || !Check_is_Group || !Check_line)                   
+                {
+                    Debug.Log("CHECK STATUS TARGET");
+                    IKO_Controll iKO_Controll = new();                       
+                    iKO_Controll.Mistakes += 3;                    
+                }
+                //Destroy(gameObject);
+                return;
+            }
+            else
+            {
+                // Движемся по троектории на шаг \\
+                transform.position = Walk_line(_Namber_Step);
+                // показовать \\
+                main_target.SetActive(true);            
+                // Двигоем главною цель \\            
+                Turn_on_IKO(main_target);
+                main_target.transform .tag = "MAIN";   
+                main_target.transform.position = Walk_line(_Namber_Step);
+            }
+            
             // создаем след на ико \\
-            if(_Namber_Step < Quantity_Trace)
-                trace_trajectories.Add(Instantiate(is_Our ? Target_Our : Target_Single, this.transform, false));            
-            if(trace_trajectories.Count > 0)
+            if(_Namber_Step < Quantity_Trace && _Namber_Step > 0)
+            {
+                GameObject trace_trajectorie;
+                if (is_Our)
+                {
+                    this.tag = "_OUR_";                    
+                    trace_trajectorie = Instantiate(_is_group ? Target_Group_Our : Target_Our, this.transform, false);
+                }
+                else
+                {
+                    this.tag = "_SINGLE_";                    
+                    trace_trajectorie = Instantiate(_is_group ? Target_Group_Single : Target_Single, this.transform, false);
+                }                
+                Turn_on_IKO(trace_trajectorie);
+                trace_trajectories.Insert(0, trace_trajectorie);
+            }
+                       
+            if(trace_trajectories.Count > 1) 
                 for (int i = 0; i < trace_trajectories.Count; i++)
                 {
+                    if (i == 0)
+                        trace_trajectories[i].SetActive(false);
+                    else
+                        trace_trajectories[i].SetActive(true);
                     trace_trajectories[i].transform.position = Walk_line(_Namber_Step - i);
-                    Turn_on_IKO(trace_trajectories[i]);
-                    trace_trajectories[i].GetComponent<CanvasGroup>().alpha = 1f - (1f / Quantity_Trace) * i;
+                    trace_trajectories[i].GetComponent<CanvasGroup>().alpha = 0.5f - (0.5f / (Quantity_Trace - Quantity_Trace / 2)) * i;                    
                 }
-            // Увелтчиваем шаг\\
+
+            // Увеличиваем шаг\\
             _Namber_Step++;
-            
-                         
         }
     }
-    private void Update()
-    {        
-        if (_Namber_Step >  Quantity_point)           
-        {
-            // Проверка на запросы целей перед удалением\\                
-            if(!Check_our || !Check_is_Group || !Check_line)                
-            {                 
-                IKO_Controll iKO_Controll = new IKO_Controll();                  
-                iKO_Controll.Mistakes = iKO_Controll.Mistakes + 3;
-            }                              
-            foreach (var trace in trace_trajectories)                    
-                Destroy(trace);                
-            trace_trajectories.Clear();            
-            Destroy(gameObject);           
-        }   
-    }
+   
 
     private void OnTriggerEnter2D(Collider2D collision)
     {           
@@ -166,14 +216,14 @@ public class Body_Target : MonoBehaviour
         else if(collision.tag == "_OUR_" && this.tag == "_OUR_")
         {
             IKO_Controll iKO_Controll = new IKO_Controll();
-            iKO_Controll.Generate_Target(0, false);
+            iKO_Controll.Generate_Target();
             Debug.Log("Вызывоем врага");
             Destroy(gameObject);
         }
         else if(collision.tag == "_SINGLE_" && this.tag == "_SINGLE_")
         {
             IKO_Controll iKO_Controll = new IKO_Controll();
-            iKO_Controll.Generate_Target(0, true);
+            iKO_Controll.Generate_Target();
             Debug.Log("Вызывоем своего");
             Destroy(gameObject);
         }
