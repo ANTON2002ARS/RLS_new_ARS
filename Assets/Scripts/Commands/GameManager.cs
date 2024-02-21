@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     public TooltipPanel Tooltip;
     public float TooltipDelay;
     public bool TooltipIsAllowed { get; set; } = true;
-
+    
     [Header("Commands")]
     public Command[] CommandList;
     public RectTransform CommandButtonsUI;

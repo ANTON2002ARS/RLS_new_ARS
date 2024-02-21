@@ -126,6 +126,16 @@ public class IKO_Controll : MonoBehaviour
     [SerializeField]
     private Button Check_Line;
 
+    [Header("Help Mode")]
+    [SerializeField]
+    private Button Children_Button_Set;
+    [SerializeField]
+    private Helper_Testing Children_mode_Helper;
+    private bool _has_help;
+    public static bool Is_Help_Target;
+    public static bool Is_Help_Interference;
+
+    [Header("______")]
     private const float _defaultBrightness = 0.5f;        
     private bool _hasStarted;
     public string Str_Mistakes = null;
@@ -170,7 +180,10 @@ public class IKO_Controll : MonoBehaviour
     public static IKO_Controll Instance { get; private set; }    
 
     public event UnityAction OnReset;
-       
+
+    // остановка теста \\
+    public void Stop_Test(bool _is_stop) => _hasStarted = !_is_stop;
+
     // Количество целий для теста \\
     [SerializeField]
     private int Quentity_Targets_need = 8;
@@ -327,11 +340,13 @@ public class IKO_Controll : MonoBehaviour
 
         GameManager.Instance.Reset_Blocks_Action();
 
-        if(_close_Iko && !_stop_antenna)
-        {            
+        if (_close_Iko && !_stop_antenna)
+        {
             Debug.Log("START time");
             _hasStarted = true;
         }
+        else if (_close_Iko && !_hasStarted)
+            _hasStarted = true;
                  
     }
 
@@ -344,12 +359,14 @@ public class IKO_Controll : MonoBehaviour
     }
     public void Close_IKO()
     {
+        Call_Helper("При возвращении на ИКО, \n при наличии помехи будет проверена правильность избавлении от неё.", false);
+
         if (_hasStarted)
-        {
-            Debug.Log("STOP time");
-            _close_Iko = true;
-            _hasStarted = false;
-        }
+            Stop_Test(true);
+       
+        Debug.Log("STOP time"); 
+        _close_Iko = true;
+
         GameManager.Instance.Clear_Action();
     }
 
@@ -365,6 +382,9 @@ public class IKO_Controll : MonoBehaviour
 
         if (InterferenceFolder.transform.childCount != 1)
             return; ;
+
+        if (Interferenses_ == null)
+            return;
 
         var interference = Interferenses_.Peek().gameObject;
         
@@ -438,6 +458,7 @@ public class IKO_Controll : MonoBehaviour
         options.Insert(0, _target);
         // Устанавливаем обновленную коллекцию опций в Dropdown
         Choice_target.options = options;
+
     }
 
 
@@ -567,6 +588,11 @@ public class IKO_Controll : MonoBehaviour
         Mistakes = 0;
         Report.text = Str_Mistakes = "";
         Report.color = Color.black;
+        // убираем помошнока\\
+        _has_help = false;
+        Is_Help_Target = false;
+        Is_Help_Interference = false;
+        Children_Button_Set.gameObject.SetActive(true);
     }
     
 
@@ -581,12 +607,14 @@ public class IKO_Controll : MonoBehaviour
         StartButton.interactable = false;        
         Report.text = Str_Mistakes = "  НАЧАЛО БОЕВОЕ РАБОТЫ  ";
         Report.color = Color.black;
+        Call_Helper("Внизу слева будет писаться отчет о прохождении теста", true);
         // создаем цель \\
         Generate_Target();
         // создаем помеху\\
         Generate_Interference();
     }
 
+    
 
     private bool _stop_antenna;    
     public void Stop_timer()
@@ -595,8 +623,8 @@ public class IKO_Controll : MonoBehaviour
         {
             _stop_antenna = true;
             Report.text = "Пауза";
-            Report.color = Color.black;
-            _hasStarted = false;
+            Report.color = Color.black;           
+            Stop_Test(true);
             Stop_Time.GetComponentInChildren<Text>().text = "Пауза";
             Stop_Time.GetComponent<Image>().color = Color.red;
             Restart_Button.interactable = false;
@@ -607,8 +635,8 @@ public class IKO_Controll : MonoBehaviour
             _stop_antenna = false;
             Report.text = "Продолжение";
             Report.color = Color.black;
-            if(_hasStarted == false && Targets.Count >= 1)
-                _hasStarted = true;
+            if (_hasStarted == false && Targets.Count >= 1)
+                Stop_Test(false);                
             Stop_Time.GetComponentInChildren<Text>().text = "Остановить антенну\n(время)";
             Stop_Time.GetComponent<Image>().color = new Color(127 / 255f, 127 / 255f, 127 / 255f);
             Restart_Button.interactable = true;
@@ -744,7 +772,8 @@ public class IKO_Controll : MonoBehaviour
         }
 
         Interferense.GetComponent<Body_Interference>().tag = _interferense_tag;
-        Interferenses_.Push(Interferense.GetComponent<Body_Interference>());           
+        Interferenses_.Push(Interferense.GetComponent<Body_Interference>());
+
     }
 
     
@@ -810,13 +839,21 @@ public class IKO_Controll : MonoBehaviour
 
 
     public void Test_children_mode()
-    {        
-        List<Action> a = GameManager.Instance.GetAction();
-        foreach (var item in a)
-        {
-            Debug.Log(item.ActionName);
-        }
+    {
+        _has_help = true;
+        Children_Button_Set.gameObject.SetActive(false);
+        Max_Mistakes = 1000;
     }
+
+
+    public void Call_Helper(string text, bool _can_continue)
+    {
+        if (!_has_help)
+            return;            
+        Children_mode_Helper.Call_Helper(text, _can_continue);
+
+    }
+
 }
 
 [System.Serializable]

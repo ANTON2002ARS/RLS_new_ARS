@@ -4,21 +4,19 @@ using UnityEngine;
 
 public class Body_Interference : MonoBehaviour
 {
-    // проверка на узбавление от помехи \\
+    // проверка на избавление от помехи \\
     [SerializeField]
     public bool Check_work;
     [SerializeField]
     public bool Check_Test;
     [SerializeField]
     public string Tag_;
+        
 
     private readonly float max_Radius = 2.5f;
     private readonly float min_Radius = 0.5f;
 
-    public void Delete()
-    {
-        Destroy(this.gameObject);
-    }
+    public void Delete() => Destroy(this.gameObject);
 
     private void Random_Rotation()
     {

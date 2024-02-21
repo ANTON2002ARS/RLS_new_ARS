@@ -22,6 +22,14 @@ public class Domain : MonoBehaviour
         if (collision.tag != "Line")
             return;        
         image.SetActive(true);
+
+        if (!IKO_Controll.Is_Help_Interference)
+        {
+            IKO_Controll.Is_Help_Interference = true;
+            IKO_Controll.Instance.Call_Helper("На ИКО появилась помеха определить её вид, " +
+                "\n и попробовать избавится от неё выбрав действие в блоках в Машине 1 => Внутри КУНГа." +
+                "\n (При неправильном избавлении, помеха все равно ищезнет и будет вызвана новая)", true);
+        }
            
         if(GetComponentInParent<Body_Interference>() != null && GetComponentInParent<Body_Interference>().Check_work == true)
         {

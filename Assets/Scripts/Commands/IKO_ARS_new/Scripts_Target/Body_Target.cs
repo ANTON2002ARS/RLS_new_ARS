@@ -155,8 +155,7 @@ public class Body_Target : MonoBehaviour
                     Debug.Log("CHECK STATUS TARGET");
                     IKO_Controll iKO_Controll = new();                       
                     iKO_Controll.Mistakes += 3;                    
-                }
-                //Destroy(gameObject);
+                }                
                 return;
             }
             else
@@ -164,7 +163,15 @@ public class Body_Target : MonoBehaviour
                 // Движемся по троектории на шаг \\
                 transform.position = Walk_line(_Namber_Step);
                 // показовать \\
-                main_target.SetActive(true);            
+                main_target.SetActive(true);
+
+                if (!IKO_Controll.Is_Help_Target)
+                {
+                    IKO_Controll.Is_Help_Target = true;
+                    IKO_Controll.Instance.Call_Helper("На ИКО появилась ЦЕЛЬ, запросить цель и определить её принадлежность, количество и доложить о цели." +
+                        "\n (Если цель не запросить ТЕСТ НЕ ПРОЙДЕН, за остальное ОШИБКА)", true);
+                }            
+
                 // Двигоем главною цель \\            
                 Turn_on_IKO(main_target);
                 main_target.transform .tag = "MAIN";   
