@@ -372,6 +372,7 @@ public class IKO_Controll : MonoBehaviour
         Debug.Log("STOP time"); 
         _close_Iko = true;
 
+        GameManager.Instance.Reset_Blocks_Action();
         GameManager.Instance.Clear_Action();
     }
 
