@@ -346,7 +346,12 @@ public class IKO_Controll : MonoBehaviour
             _hasStarted = true;
         }
         else if (_close_Iko && !_hasStarted)
-            _hasStarted = true;
+        {
+            if (_stop_antenna)
+                _hasStarted = false;           
+            else
+                _hasStarted = true;
+        }            
                  
     }
 
@@ -607,6 +612,7 @@ public class IKO_Controll : MonoBehaviour
         StartButton.interactable = false;        
         Report.text = Str_Mistakes = "  НАЧАЛО БОЕВОЕ РАБОТЫ  ";
         Report.color = Color.black;
+        Children_Button_Set.gameObject.SetActive(false);
         Call_Helper("Внизу слева будет писаться отчет о прохождении теста", true);
         // создаем цель \\
         Generate_Target();
