@@ -191,7 +191,7 @@ public class IKO_Controll : MonoBehaviour
     private int is_quentity;
     private int _quentity_kill;
     // интервал в секундах \\
-    private float interval = 20f;
+    private float interval = 30f;
     private float timer = 0f;
     // Выбраная цель\\
     private int choice_target;    
@@ -679,12 +679,12 @@ public class IKO_Controll : MonoBehaviour
         }
         int number_target = 0;
         int azimuth = 0; 
-        int ring = 0;     
+        int ring_to_long = 0;     
         try
         {
             number_target = int.Parse(numbers[0]);
             azimuth = int.Parse(numbers[1]);
-            ring = int.Parse(numbers[2]);
+            ring_to_long = int.Parse(numbers[2]);
         }
         catch
         {
@@ -717,11 +717,21 @@ public class IKO_Controll : MonoBehaviour
             return;
         }
 
-        float ring_target = (float)(of_target.magnitude * 15 / 4);
-        
-        if (ring != Mathf.Round(ring_target))
+        bool find_limit(int long_target, float ring)
         {
-            Report.text = "ОШИБКА СЕКТОРА, правильно: " + Mathf.Round(ring_target);
+            Debug.Log("long_target:" + long_target);
+            Debug.Log("ring:" + ring);
+            float lowerLimit = (float)((ring - 1) * 10) ;
+            Debug.Log("lowerLimit: " + lowerLimit);
+            float upperLimit = (float)((ring + 1) * 10);
+            Debug.Log("upperLimit: " + upperLimit);
+            return long_target * 10 >= (int)lowerLimit && long_target * 10 <= (int)upperLimit;
+        }
+        float ring_target = (float)(of_target.magnitude * 15 / 4);
+        //ring_to_long != Mathf.Round(ring_target) *10
+        if (find_limit(ring_to_long, ring_target))
+        {
+            Report.text = "ОШИБКА СЕКТОРА, правильно: " + Mathf.Round(ring_target * 10);
             Report.color = Color.red;
             Mistakes++;
             return;
@@ -734,34 +744,46 @@ public class IKO_Controll : MonoBehaviour
         return;
     }
 
+    private int exclude = 1;
 
     public void Generate_Interference()
     {
         GameObject Interferense;
         //Random.Range(0, 4)
         string _interferense_tag;
-        
-        switch (Random.Range(0, 4))
+
+        List<int> numbers = new() { 0, 1, 2, 3, 4 }; // Создаем список чисел от 0 до 4, за исключением значения 2
+
+        numbers.Remove(exclude); // Удаляем число-исключение из списка
+
+        int randomIndex = Random.Range(0, numbers.Count); // Генерируем случайный индекс из доступных чисел
+        //numbers[randomIndex]
+        switch (numbers[randomIndex])
         {
             case 0:
                 Interferense = Instantiate(Passive_Prefab[Random.Range(0, Passive_Prefab.Count)], InterferenceFolder);                
                 _interferense_tag = "PASSIVE";
+                exclude = 0;
                 break;
             case 1:
                 Interferense = Instantiate(From_local_Prefab[Random.Range(0, From_local_Prefab.Count)], InterferenceFolder);                
                 _interferense_tag = "FROM_LOCAL";
+                exclude = 1;
                 break;
             case 2:
                 Interferense = Instantiate(NIP_Prefab[Random.Range(0, NIP_Prefab.Count)], InterferenceFolder);                
                 _interferense_tag = "NIP";
+                exclude = 2;
                 break;
             case 3:
                 Interferense = Instantiate(Active_noise_Prefab[Random.Range(0, Active_noise_Prefab.Count)], InterferenceFolder);                
                 _interferense_tag = "ACTIVE_NOISE";
+                exclude = 3;
                 break;
             default:
                 Interferense = Instantiate(Response_Prefab[Random.Range(0, Response_Prefab.Count)], InterferenceFolder);                
                 _interferense_tag = "RESPONSE";
+                exclude = 4;
                 break;
         }
 
@@ -802,7 +824,10 @@ public class IKO_Controll : MonoBehaviour
                 if(interference.tag == "PASSIVE")
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
-                    Report.color = Color.green;                    
+                    Report.color = Color.green;
+                    Call_Helper("На ИКО пассивная помеха для избавления нужно установить переключатели на блоках: \n " +
+                        "ПОС-71 => Изменить режим работы на стробирование \n " +
+                        "ПОВ-72 => в положение ПЕЛЕНГ", true);
                     return;
                 }
                 break;
@@ -810,7 +835,15 @@ public class IKO_Controll : MonoBehaviour
                 if (interference.tag == "FROM_LOCAL")
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
-                    Report.color = Color.green;                    
+                    Report.color = Color.green;
+                    Call_Helper("На ИКО местные предметы для избавления нужно установить переключатели на блоках: \n" +
+                        "\n К-71 => Местные предметы" +
+                        "\n К-71 => Местные предметы" +
+                        "\n O-71 => НАЧАЛО ДИСТАНЦИИ" +
+                        "\n O-71 => ВХОДНОЕ НАПРЯЖЕНИЕ" +
+                        "\n O-71 => МАШТАБ" +
+                        "\n O-71 => Штырек" +
+                        "\n ПОС-71 => Тумблер Высокое Напряжение", true);
                     return;
                 }
                 break;
@@ -818,7 +851,9 @@ public class IKO_Controll : MonoBehaviour
                 if (interference.tag == "NIP")
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
-                    Report.color = Color.green;                    
+                    Report.color = Color.green;
+                    Call_Helper("На ИКО НИП для избавления нужно установить переключатели на блоках: \n" +
+                        "\n ФП-71 => ФП ОТКЛ. В положения ФП", true);
                     return;
                 }
                 break;
@@ -826,7 +861,10 @@ public class IKO_Controll : MonoBehaviour
                 if (interference.tag == "ACTIVE_NOISE")
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
-                    Report.color = Color.green;                    
+                    Report.color = Color.green;
+                    Call_Helper("На ИКО НИП для избавления нужно установить переключатели на блоках: \n" +
+                        "\n ПОС-71 => ПЕРЕКЛЮЧЕНИЯ ВОЛН" +
+                        "\n ПОВ-72=> ПЕЛЕНГ", true);
                     return;
                 }
                 break;
@@ -834,7 +872,9 @@ public class IKO_Controll : MonoBehaviour
                 if (interference.tag == "RESPONSE")
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
-                    Report.color = Color.green;                    
+                    Report.color = Color.green;
+                    Call_Helper("На ИКО ответная помеха для избавления нужно установить переключатели на блоках: \n" +
+                        "\n ПОС-71 => Вскрыть крышку и включить режим мерцания", true);
                     return;
                 }
                 break;            

@@ -26,8 +26,8 @@ public class Domain : MonoBehaviour
         if (!IKO_Controll.Is_Help_Interference)
         {
             IKO_Controll.Is_Help_Interference = true;
-            IKO_Controll.Instance.Call_Helper("На ИКО появилась помеха определить её вид, " +
-                "\n и попробовать избавится от неё выбрав действие в блоках в Машине 1 => Внутри КУНГа." +
+            IKO_Controll.Instance.Call_Helper("На ИКО появилась помеха сначала определить её вид, " +
+                "\n потом попробовать избавится от неё выбрав действие в блоках в Машине 1 => Внутри КУНГа." +
                 "\n (При неправильном избавлении, помеха все равно ищезнет и будет вызвана новая)", true);
         }
            
