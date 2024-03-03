@@ -10,7 +10,7 @@ public class InerferenceTarget : MonoBehaviour
     [SerializeField]
     private InterferenceType _type;
 
-    private bool _triggered;
+   // private bool _triggered;
     private CanvasGroup _instance;
 
     private void Start()
@@ -34,7 +34,7 @@ public class InerferenceTarget : MonoBehaviour
     {
         // if (_triggered) return;
         if (collision.tag != "Line") return;
-        _triggered = true;
+        //_triggered = true;
         _instance = Instantiate(_targetPrefab);
         _instance.transform.SetParent(transform, false);
         _instance.transform.localScale = Vector3.one;

@@ -55,7 +55,7 @@ public class Body_Target : MonoBehaviour
     public Vector2 endPosition;    // mix 2.4f
     // След триектории\\
     private readonly List<GameObject> trace_trajectories = new List<GameObject>();
-    
+    private bool Is_Help_Target;
 
     private void Generat_vector_circle(float radius)
     {
@@ -165,10 +165,10 @@ public class Body_Target : MonoBehaviour
                 // показовать \\
                 main_target.SetActive(true);
 
-                if (!IKO_Controll.Is_Help_Target)
+                if (!Is_Help_Target)
                 {
-                    IKO_Controll.Is_Help_Target = true;
-                    IKO_Controll.Instance.Call_Helper("На ИКО появилась ЦЕЛЬ, запросить цель и определить её принадлежность, количество и доложить о цели." +
+                    Is_Help_Target = true;
+                    IKO_Controll.Instance.Call_Helper("На ИКО появилась ЦЕЛЬ, определить её государственною принадлежность(Нажать (педалька) и потом определить Свой или Чужой), количество (Групповая или Одиночная) и доложить о цели." +
                         "\n (Если цель не запросить ТЕСТ НЕ ПРОЙДЕН, за остальное ОШИБКА)", true);
                 }            
 

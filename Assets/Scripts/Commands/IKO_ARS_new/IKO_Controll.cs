@@ -132,8 +132,8 @@ public class IKO_Controll : MonoBehaviour
     [SerializeField]
     private Helper_Testing Children_mode_Helper;
     private bool _has_help;
-    public static bool Is_Help_Target;
-    public static bool Is_Help_Interference;
+    /*public static bool Is_Help_Target;
+    public static bool Is_Help_Interference;*/
 
     [Header("______")]
     private const float _defaultBrightness = 0.5f;        
@@ -596,8 +596,8 @@ public class IKO_Controll : MonoBehaviour
         Report.color = Color.black;
         // убираем помошнока\\
         _has_help = false;
-        Is_Help_Target = false;
-        Is_Help_Interference = false;
+        /*Is_Help_Target = false;
+        Is_Help_Interference = false;*/
         Children_Button_Set.gameObject.SetActive(true);
     }
     
@@ -787,7 +787,11 @@ public class IKO_Controll : MonoBehaviour
                 break;
         }
 
-        if(Interferenses_.Count > 0 && Interferenses_.Peek() != null)
+        Call_Helper("На ИКО появилась помеха сначала определить её вид, " +
+                "\n потом попробовать избавится от неё выбрав действие в блоках в Машине 1 => Внутри КУНГа." +
+                "\n (При неправильном избавлении, помеха все равно исчезает и будет вызвана новая)", true);
+
+        if (Interferenses_.Count > 0 && Interferenses_.Peek() != null)
         {
             var OLD_interferense = Interferenses_.Peek();
             
@@ -862,7 +866,7 @@ public class IKO_Controll : MonoBehaviour
                 {
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
                     Report.color = Color.green;
-                    Call_Helper("На ИКО НИП для избавления нужно установить переключатели на блоках: \n" +
+                    Call_Helper("На ИКО активная шумовая для избавления нужно установить переключатели на блоках: \n" +
                         "\n ПОС-71 => ПЕРЕКЛЮЧЕНИЯ ВОЛН" +
                         "\n ПОВ-72=> ПЕЛЕНГ", true);
                     return;
@@ -891,6 +895,7 @@ public class IKO_Controll : MonoBehaviour
         Children_Button_Set.gameObject.SetActive(false);
         Max_Mistakes = 1000;
     }
+
 
 
     public void Call_Helper(string text, bool _can_continue)
