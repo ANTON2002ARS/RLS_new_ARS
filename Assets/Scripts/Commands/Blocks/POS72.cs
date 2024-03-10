@@ -83,6 +83,12 @@ public class POS72 : AbstractBlock
     private void TriggerEventInGM(ToggleAction a, bool state)
     {
         a.currentState = state;
+        if (a.ActionName == "Вскрыть крышку и включить режим мерцания")
+        {
+            IKO_Controll.Instance.Set_Mode_Frickering();
+            return;
+        }
+            
         GameManager.Instance.AddToState(a);
     }
 

@@ -9,6 +9,8 @@ public class Body_Target : MonoBehaviour
     private float radius_spawn;// max 3.5f  
     // номер цели на ико \\
     public int Namber_on_IKO;
+    //\\
+    public bool Start_Up_PRS;
     // Свой(true) или Чужой(false) \\    
     [HideInInspector]
     public bool is_Our;
@@ -35,7 +37,7 @@ public class Body_Target : MonoBehaviour
     private GameObject Target_Group_Our;        // Свой Группа
     [SerializeField]
     private GameObject Target_Group_Single;     // Чужой Группа
-
+        
     // Сама реальная цель \\
     private GameObject main_target;
     // Цель отыграла\\
@@ -104,6 +106,16 @@ public class Body_Target : MonoBehaviour
         return vector_moving;
     }
 
+    private bool is_PRS_one;
+    private void Call_PRS()
+    {
+        if (Namber_on_IKO == 0)
+            return;            
+        is_PRS_one = true;
+        Start_Up_PRS = true;
+        IKO_Controll.Instance.Generate_PRS(this.transform.position, Namber_on_IKO);
+       
+    }
     
     private void Start()
     {         
@@ -131,13 +143,19 @@ public class Body_Target : MonoBehaviour
             Create_Prefab(_is_group ? Target_Group_Single : Target_Single);
         }         
     }
-
+    
+    
     private void OnTriggerExit2D(Collider2D collision)
     {
         if(collision.tag == "Line" && flag_move == true)
         {
             // опускаем флаг \\
             flag_move = false;
+
+            // Вызываем ПРС \\ 
+            if (Random.Range(0, 5) == 1 && !is_PRS_one)
+                Call_PRS();
+                        
             // Плавное удаление цели\\
             if (_Namber_Step > Quantity_point)
             {
@@ -169,7 +187,9 @@ public class Body_Target : MonoBehaviour
                 {
                     Is_Help_Target = true;
                     IKO_Controll.Instance.Call_Helper("На ИКО появилась ЦЕЛЬ, определить её государственною принадлежность(Нажать (педалька) и потом определить Свой или Чужой), количество (Групповая или Одиночная) и доложить о цели." +
-                        "\n (Если цель не запросить ТЕСТ НЕ ПРОЙДЕН, за остальное ОШИБКА)", true);
+                        "\n (Если цель не запросить ТЕСТ НЕ ПРОЙДЕН, за остальное ОШИБКА)\n" +
+                        "Для доклада о цели оператор определяет её координаты и докладывает: \n" +
+                        " «00(номер цели) - 000 (азимут) - 000 (дальность)»", true);
                 }            
 
                 // Двигоем главною цель \\            

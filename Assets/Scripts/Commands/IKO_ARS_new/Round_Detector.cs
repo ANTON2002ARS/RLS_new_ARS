@@ -17,7 +17,12 @@ public class Round_Detector : MonoBehaviour
                 Set_Flag.GetComponent<Body_Target>().flag_move = true;
                 //Debug.Log("Оборотов: " + _rounds.ToString() + " Flag: " + Set_Flag.GetComponent<Body_Target>().flag_move);
             }
-        }       
+        }
+        foreach (var PRS in IKO_Controll.PRS_of_target)
+        {
+            if(PRS != null && PRS.GetComponent<Body_PRS>() != null)
+                PRS.GetComponent<Body_PRS>().flag_move = true;
+        }
         
     }
         

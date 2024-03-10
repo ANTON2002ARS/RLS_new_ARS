@@ -24,6 +24,7 @@ TagManager:
   - RESPONSE
   - _DOMAIN_
   - MAIN
+  - PRS
   layers:
   - Default
   - TransparentFX

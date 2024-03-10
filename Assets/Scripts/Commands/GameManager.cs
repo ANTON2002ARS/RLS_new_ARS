@@ -28,6 +28,8 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject Check;
     [SerializeField]
+    private GameObject Restorts_B;
+    [SerializeField]
     private Transform InterferenceFolder;
 
     [Header("Answer")]
@@ -153,6 +155,7 @@ public class GameManager : MonoBehaviour
         OpenIkoButton.SetActive(_currentCommand.ShowIkoButton);
         // Скрываем кнопку проверки\\
         Check.SetActive(!_currentCommand.ShowIkoButton);
+        Restorts_B.SetActive(!_currentCommand.ShowIkoButton);
         RoleSelect.SetActive(false);
         MainPanel.SetActive(true);
         MainPanel.OpenDefaultBlock();

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -88,10 +89,12 @@ public class IKO_Controll : MonoBehaviour
 
     #endregion
         
-    [Header("Target Prefabs")]
+    [Header("Target and PRS Prefabs")]
     [SerializeField]
     private GameObject Target_Flying;
-
+    [SerializeField]
+    private GameObject PRS_target;
+   
     [Header("Interference Prefabs")]
     [SerializeField]
     private List<GameObject> Passive_Prefab;
@@ -122,6 +125,8 @@ public class IKO_Controll : MonoBehaviour
     [SerializeField]
     private InputField Status_Target;
     [SerializeField]
+    private InputField Status_PRS;
+    [SerializeField]
     private Button Stop_Time;
     [SerializeField]
     private Button Check_Line;
@@ -141,6 +146,8 @@ public class IKO_Controll : MonoBehaviour
     public string Str_Mistakes = null;
     // Список всех появившихся целей на ико \\
     public static List<GameObject> Targets = new List<GameObject>();
+    // Список ПРС от целей \\
+    public static List<GameObject> PRS_of_target = new List<GameObject>();
     // Список помех \\
     public static Stack<Body_Interference> Interferenses_ = new Stack<Body_Interference>();
     [Header("Mistakes Check")]
@@ -261,6 +268,15 @@ public class IKO_Controll : MonoBehaviour
                 Generate_Target();
                 // создаем помеху\\
                 Generate_Interference();
+                // создаем ПРС \\
+                float angle = Random.Range(0f, Mathf.PI * 2f);
+                float radius = 4.0f;
+                float x = Mathf.Sin(angle) * radius;
+                float y = Mathf.Cos(angle) * radius;
+                Vector2 start_prs = new Vector2(x, y);
+                if(Random.Range(0, 9) == 1)
+                    Generate_PRS(start_prs, 0);
+
                 Report.text = Str_Mistakes = "Появление новой цели," +
                               "\n    кол-во проигранных целей:  " + is_quentity +
                               "\n    кол-во удаленых целей:      " + _quentity_kill +
@@ -441,9 +457,12 @@ public class IKO_Controll : MonoBehaviour
 
     public void Generate_Target()
     {
+        if (Target_Flying == null)
+            return;
+
         GameObject target = Instantiate(Target_Flying, TargetsFolder);
         target.transform.SetParent(TargetsFolder.transform);        
-        // добавляем ноную цель \\
+        // добавляем новую цель \\
         is_quentity++;
         // добавляем цель в начало списка \\
         Targets.Insert(0, target);
@@ -454,7 +473,7 @@ public class IKO_Controll : MonoBehaviour
             {
                 Report.text = Str_Mistakes = "ТЕСТ НЕ ПРОЙДЕН, ошибка не запросил цель";
                 Report.color = Color.red;
-                Mistakes = Max_Mistakes;                
+                GameManager.Instance.FailCheck();
             }
         }
         // Получаем существующую коллекцию опций
@@ -504,9 +523,9 @@ public class IKO_Controll : MonoBehaviour
                 Choice_target.GetComponentInChildren<Text>().text = Choice_target.options[namber].text;
                 //Choice_target.options.Add(new Dropdown.OptionData() { text = "Цель 0" + Targets.Count });
                 if (Targets[namber].GetComponent<Body_Target>().is_Our == true)
-                    text_botton.text = "Цель " + namber.ToString() + ", Есть ответ";
+                    text_botton.text = "Цель 0" + Targets[namber].GetComponent<Body_Target>().Namber_on_IKO.ToString() + ", Есть ответ";
                 else
-                    text_botton.text = "Цель " + namber.ToString() + ", Нет ответа";
+                    text_botton.text = "Цель 0" + Targets[namber].GetComponent<Body_Target>().Namber_on_IKO.ToString() + ", Нет ответа";
             }
             else
             {
@@ -573,6 +592,12 @@ public class IKO_Controll : MonoBehaviour
             if (target != null)
                 Destroy(target);
         Targets.Clear();
+
+        foreach (var prs in PRS_of_target)
+            if (prs != null)
+                Destroy(prs);                
+        PRS_of_target.Clear();
+
         is_quentity = _quentity_kill = 0;
         timer = 0f;
         // убераем надписи целей\\
@@ -665,32 +690,55 @@ public class IKO_Controll : MonoBehaviour
         return (int)angle;
     }
         
-    
+    private bool is_Within_Range(int azimuth_user, Vector2 of_target)
+    {
+        int azimuth_target = Find_Azimuth(of_target);
+        float lowerLimit = azimuth_target * 0.9f; // 90% от нужного числа
+        float upperLimit = azimuth_target * 1.1f; // 110% от нужного числа
+
+        return azimuth_user >= lowerLimit && azimuth_user <= upperLimit;
+    }
+    private bool Find_Limit(int long_target, float ring)
+    {
+        Debug.Log("long_target:" + long_target);
+        Debug.Log("ring:" + ring);
+        float lowerLimit = (float)((ring - 1) * 10);
+        Debug.Log("lowerLimit: " + lowerLimit);
+        float upperLimit = (float)((ring + 1) * 10);
+        Debug.Log("upperLimit: " + upperLimit);
+        return long_target * 10 >= (int)lowerLimit && long_target * 10 <= (int)upperLimit;
+    }
+
     public void Check_line_Targets()
     {
         if (!_hasStarted) return;
+        Call_Helper("Для доклада о цели оператор определяет её координаты и докладывает: \n" +
+            " «00(сигнал новой цели) - 00(номер цели) - 000 (азимут) - 000 (дальность)»", true);
         string input = Status_Target.text;        
         string[] numbers = input.Split('-');
-        if (numbers.Length != 3)
+        if (numbers.Length != 4)
         {
-            Report.text = "Не то что нужно";
+            Report.text = "Не то что нужно, пример 00-00-000-000";
             Report.color = Color.blue;
             return;
         }
+        int free_namber = 0;
         int number_target = 0;
         int azimuth = 0; 
         int ring_to_long = 0;     
         try
         {
-            number_target = int.Parse(numbers[0]);
-            azimuth = int.Parse(numbers[1]);
-            ring_to_long = int.Parse(numbers[2]);
+            free_namber = int.Parse(numbers[0]);
+            number_target = int.Parse(numbers[1]);
+            azimuth = int.Parse(numbers[2]);
+            ring_to_long = int.Parse(numbers[3]);
         }
         catch
         {
-            Report.text = "Введите числа";
+            Report.text = "Введите числа, не понятно";
             Report.color = Color.blue;
         }
+
         Vector2 of_target = Targets[choice_target].GetComponent<Transform>().position;
         
         if(number_target != Targets[choice_target].GetComponent<Body_Target>().Namber_on_IKO)
@@ -700,38 +748,20 @@ public class IKO_Controll : MonoBehaviour
             return;
         }
 
-        bool is_Within_Range(int azimuth_user)
-        {
-            int azimuth_target = Find_Azimuth(of_target);
-            float lowerLimit = azimuth_target * 0.9f; // 90% от нужного числа
-            float upperLimit = azimuth_target * 1.1f; // 110% от нужного числа
-
-            return azimuth_user >= lowerLimit && azimuth_user <= upperLimit;
-        }
-
-        if (!is_Within_Range(azimuth))
+        
+        if (!is_Within_Range(azimuth, of_target))
         {
             Report.text = "ОШИБКА Азимута, ожидалось: " + azimuth;
             Report.color = Color.red;
             Mistakes++;
             return;
         }
-
-        bool find_limit(int long_target, float ring)
-        {
-            Debug.Log("long_target:" + long_target);
-            Debug.Log("ring:" + ring);
-            float lowerLimit = (float)((ring - 1) * 10) ;
-            Debug.Log("lowerLimit: " + lowerLimit);
-            float upperLimit = (float)((ring + 1) * 10);
-            Debug.Log("upperLimit: " + upperLimit);
-            return long_target * 10 >= (int)lowerLimit && long_target * 10 <= (int)upperLimit;
-        }
+                
         float ring_target = (float)(of_target.magnitude * 15 / 4);
         //ring_to_long != Mathf.Round(ring_target) *10
-        if (find_limit(ring_to_long, ring_target))
+        if (Find_Limit(ring_to_long, ring_target))
         {
-            Report.text = "ОШИБКА СЕКТОРА, правильно: " + Mathf.Round(ring_target * 10);
+            Report.text = "ОШИБКА ДАЛЬНОСТИ, правильно: " + Mathf.Round(ring_target * 10);
             Report.color = Color.red;
             Mistakes++;
             return;
@@ -878,7 +908,7 @@ public class IKO_Controll : MonoBehaviour
                     Report.text = Str_Mistakes = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
                     Report.color = Color.green;
                     Call_Helper("На ИКО ответная помеха для избавления нужно установить переключатели на блоках: \n" +
-                        "\n ПОС-71 => Вскрыть крышку и включить режим мерцания", true);
+                        "\n ФП-71 => ФП ОТКЛ. В положения ФП", true);
                     return;
                 }
                 break;            
@@ -888,6 +918,143 @@ public class IKO_Controll : MonoBehaviour
         Report.color = Color.red;        
     }
 
+    public void Generate_PRS(Vector2 start_PRS , int of_target)
+    {
+        if (PRS_of_target.Count >= 2)
+            return;
+
+
+        if (of_target == 0)
+            Call_Helper("На ИКО противорадиолокационный снаряд. Доложить: пуск ПРС 000-000 (азимут-дальность)" +
+                " \n и избавиться от него на ПОС72 => Вскрыть крышку и включаеть режим мерцания ", true);
+        else
+            Call_Helper("На ИКО ПротивоРадиолокационный Снаряд. Доложить: Цель 00, пуск ПРС 000-000 (азимут-дальность)" +
+                "\n и избавиться от него на ПОС72 => Вскрыть крышку и включить режим мерцания ", true);
+        GameObject PRS = Instantiate(PRS_target, TargetsFolder, false);
+        PRS.transform.SetParent(TargetsFolder.transform);
+        PRS.GetComponent<Body_PRS>().Start_PRS = start_PRS;
+        PRS.GetComponent<Body_PRS>().Of_Target = of_target;
+        PRS_of_target.Add(PRS);      
+    }
+
+    public void Check_Line_PRS()
+    {
+        //Цель 00, пуск ПРС 000-000
+        string input = Status_PRS.text;
+        List<int> data_report = new List<int>();
+        string[] words = input.Split(' ', ',', '-');
+        
+        foreach (string word in words)
+        {
+            int num;
+            if (int.TryParse(word, out num))
+                data_report.Add(num);         
+        }
+
+        int number_target = 0;
+        int azimuth;
+        int ring_to_long;
+
+        if (data_report.Count == 2)
+        {  
+            azimuth = data_report[0];
+            ring_to_long = data_report[1];
+        }
+        else if(data_report.Count == 3)
+        {
+            number_target = data_report[0];
+            azimuth = data_report[1];
+            ring_to_long = data_report[2];
+        }
+        else
+        {
+            Report.text = "Не то что нужно, пример: Цель 00, пуск ПРС 000-000 или" +
+                                                "\n Пуск ПРС 000-000";
+            Report.color = Color.blue;
+            return;
+        }
+
+        Debug.Log("number_target: " + number_target + " azimuth: " + azimuth + " ring_to_long: " + ring_to_long);
+        Debug.Log("PRS_of_target.Count: " + PRS_of_target.Count);
+                
+
+        foreach (var prs in  PRS_of_target)
+        {            
+            if(prs != null && prs.GetComponent<Body_PRS>().Of_Target == number_target /*&& !prs.GetComponent<Body_PRS>().Check_Status*/)
+            {
+                Vector2 position_prs = prs.GetComponent<Transform>().position;
+
+                Debug.Log("position_prs: " + position_prs);
+
+                if (!is_Within_Range(azimuth, position_prs))
+                {
+                    Report.text = "ОШИБКА Азимута, ожидалось: " + azimuth;
+                    Report.color = Color.red;
+                    Mistakes++;
+                    return;
+                }
+
+                float ring_target = (float)(position_prs.magnitude * 15 / 4);
+                //ring_to_long != Mathf.Round(ring_target) *10
+                if (Find_Limit(ring_to_long, ring_target))
+                {
+                    Report.text = "ОШИБКА ДАЛЬНОСТИ, правильно: " + Mathf.Round(ring_target * 10);
+                    Report.color = Color.red;
+                    Mistakes++;
+                    return;
+                }
+
+                prs.GetComponent<Body_PRS>().Check_Status = true;
+                Status_PRS.text = "Цель , пуск ПРС ";
+
+                Report.text = "ПРАВИЛЬНО, кол-во ошибок: " + Mistakes;
+                Report.color = Color.green;
+
+                return;
+            }    
+            /*else if (prs.GetComponent<Body_PRS>().Check_Status)
+            {
+                Report.text = "Доклад уже был о ПРС";
+                Report.color = Color.red;
+                return;
+            }*/
+        }
+
+        Report.text = "Не для той цели значение";
+        Report.color = Color.red;
+    }
+
+    public void Check_Flickering(GameObject PRS)
+    {
+        if (!PRS.GetComponent<Body_PRS>().Mode_Frickering)
+            Kill_RLS();
+
+        PRS_of_target.Remove(PRS);
+
+        Destroy(PRS);        
+        Report.text = Str_Mistakes = "противорадиолокационный снаряд => промaзать";
+        Report.color = Color.green;
+    }
+
+    private void Kill_RLS()
+    {
+        // тест проволен РЛС уничножена\\
+        if (Random.Range(0, 1) == 1)
+            return;
+
+        _hasStarted = false;
+        Report.text = Str_Mistakes = "РЛС была уничтожена противорадиолокационным снарядом";
+        Report.color = Color.red;        
+        GameManager.Instance.FailCheck();
+    }
+
+    public void Set_Mode_Frickering()
+    {
+        foreach (var prs in PRS_of_target)
+            if(prs != null)
+                prs.GetComponent<Body_PRS>().Mode_Frickering = true;
+    }
+
 
     public void Test_children_mode()
     {
@@ -895,8 +1062,7 @@ public class IKO_Controll : MonoBehaviour
         Children_Button_Set.gameObject.SetActive(false);
         Max_Mistakes = 1000;
     }
-
-
+        
 
     public void Call_Helper(string text, bool _can_continue)
     {

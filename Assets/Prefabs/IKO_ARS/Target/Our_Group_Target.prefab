@@ -278,6 +278,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Our_Group_Target
       objectReference: {fileID: 0}
+    - target: {fileID: 1330522258578565827, guid: 5eef4e5559cb1fe42a835ac083c84b69,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4897443933279652842, guid: 5eef4e5559cb1fe42a835ac083c84b69,
         type: 3}
       propertyPath: m_Alpha

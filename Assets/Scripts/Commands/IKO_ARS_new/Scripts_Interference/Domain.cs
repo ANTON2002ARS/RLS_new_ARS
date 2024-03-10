@@ -35,6 +35,9 @@ public class Domain : MonoBehaviour
         if(this.tag == "PASSIVE" && Body_Passive._is_strobing == true)            
         {
             Canvas.alpha -= 0.4f;           
-        }                 
+        }
+
+       // Canvas.alpha = 0.8f;
     }
+   
 }
