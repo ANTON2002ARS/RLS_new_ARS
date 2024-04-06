@@ -14,11 +14,7 @@ public class GameManager : MonoBehaviour
     public CheckResult CheckResultPanel;
     [SerializeField]
     private Text Report_Blocks;
-    public string Repotr_Set_Text
-    {
-        set => Report_Blocks.text = value;        
-    }
-
+    public string Repotr_Set_Text { set => Report_Blocks.text = value; }
     public static bool Is_Reset_State;
 
     [Header("IKO")]
@@ -65,15 +61,9 @@ public class GameManager : MonoBehaviour
 
     public UnityEvent Tips_OpenIkoCalled = new UnityEvent();
     public UnityEvent Tips_CloseIkoCalled = new UnityEvent();
-
     public UnityEvent OnReset = new UnityEvent();
-
     public static GameManager Instance { get; private set; }
-
-    private void Awake()
-    {
-        Instance = this;
-    }
+    private void Awake() => Instance = this;
     
     private void Start()
     {
@@ -117,7 +107,6 @@ public class GameManager : MonoBehaviour
             refit();
             t.GetComponent<UIResizeListener>().OnResized.AddListener(refit);
         }
-
         Tooltip.Show("", null);
         Tooltip.Hide();
         _iko?.gameObject.SetActive(true);
@@ -129,26 +118,22 @@ public class GameManager : MonoBehaviour
         TooltipIsAllowed = false;
         _currentCommand = command;
         CommandSelect.SetActive(false);
-
         float totalWidth = -RoleButtonsSpacing;
-
+        // Установка все значение на кнопки\\
         RoleButton1.SetActive(command.Enabled_p1);
         RoleButton2.SetActive(command.Enabled_p2);
         RoleButton3.SetActive(command.Enabled_p3);
         RoleButton4.SetActive(command.Enabled_p4);
         RoleButton5.SetActive(command.Enabled_p5);
-
         if (command.Enabled_p1) totalWidth += RoleButtonWidth + RoleButtonsSpacing;
         if (command.Enabled_p2) totalWidth += RoleButtonWidth + RoleButtonsSpacing;
         if (command.Enabled_p3) totalWidth += RoleButtonWidth + RoleButtonsSpacing;
         if (command.Enabled_p4) totalWidth += RoleButtonWidth + RoleButtonsSpacing;
         if (command.Enabled_p5) totalWidth += RoleButtonWidth + RoleButtonsSpacing;
-
         ButtonsHolder.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, totalWidth);
-
         RoleSelect.SetActive(true);
     }
-
+    // Установливаем роль на кнопкам \\
     public void SetRole(int r)
     {
         _personRole = r;
@@ -163,12 +148,8 @@ public class GameManager : MonoBehaviour
         var actions = GetCurrentRoleActions();
         _doesContainInternalActions = actions.Any(a => a is InternalAction);
         if (_doesContainInternalActions)
-        {
             if (actions[0] is InternalAction a) a.DispatchAction();
-        }
-        
-        // С какого ХУЮ ????\\
-        // IKO_Controll.Instance.gameObject.SetActive(true);
+
         if (_currentCommand.ShowIkoButton) IKO_Controll.Instance.OpenIko();
         else IKO_Controll.Instance.CloseIko();
     }
@@ -220,7 +201,6 @@ public class GameManager : MonoBehaviour
         _testPassed = false;
         OnReset.Invoke();
     }
-
     // Проверка помехи на избавление \\
     public bool Check_Interference( string tag)
     {
@@ -249,54 +229,35 @@ public class GameManager : MonoBehaviour
                 Debug.Log("not find");
                 break;
         }
-
-        Debug.Log("Check: tag= " + tag); 
-        
+        // Для проверки\\
+        Debug.Log("Check: tag= " + tag);         
         if (actions == null)
             return false;
-
         Debug.Log("ActionName:");
-        foreach (var item in actions)
-        {
-            Debug.Log(item.ActionName);
-        }
+        foreach (var item in actions)        
+            Debug.Log(item.ActionName);        
         Debug.Log("reg:");
-        foreach (var item in req)
-        {
-            Debug.Log(item.ActionName);
-        }
-
+        foreach (var item in req)       
+            Debug.Log(item.ActionName);        
         if (actions.Count != req.Length)
             return false;
-
         for (int i = 0; i < actions.Count; i++)
         {
             if (req[i].ActionName != actions[i].ActionName)
-            {
-                Debug.Log("Error:");
-                return false;
-            }
-
+                return false;            
             Debug.Log(actions[i].name);
-        }
-
-        /*if (actions.Any(a => !a.IsInRequiredState()))
-        {
-            Debug.Log("Fail on req state");            
-            return;
-        }*/
-       
-        
+        }        
         actions.Clear();
         return true;
     }
+    // Удалеем все действие\\
     public void Clear_Action()
     {
         if (actions.Count == 0)
             return;        
         actions.Clear();
     }
-
+    // Сбрасываем состояние на тумблирах \\
     public void Reset_Blocks_Action()
     {
         Clear_Action();
@@ -304,15 +265,7 @@ public class GameManager : MonoBehaviour
         MainPanel.OpenDefaultBlock();
         Report_Blocks.text = "Состояние сброшено";
     }
-
-
-
-    public List<Action> GetAction()
-    {
-        return actions;
-    }
-    
-
+    // Проверка для теста действий\\
     public void CheckOrder()
     {
         var req = GetCurrentRoleActions().Where(a => !(a is InternalAction)).ToArray();
@@ -328,19 +281,14 @@ public class GameManager : MonoBehaviour
         foreach (var a in actions) 
         {
             var r = req[i];
-            if (
-                a.ActionName != r.ActionName &&
-                a.GetInstanceID() != r.GetInstanceID()
-                )
+            if (a.ActionName != r.ActionName && a.GetInstanceID() != r.GetInstanceID())
             {
                 Debug.Log("Fail on action type");
                 FailCheck();
                 return;
             }
-
             i++;
         }
-
 
         if (actions.Any(a => !a.IsInRequiredState()))
         {
@@ -363,7 +311,7 @@ public class GameManager : MonoBehaviour
         CheckResultPanel.ShowPassMessage();
         _testPassed = true;
     }
-
+    // Добавить действие на список \\
     public void AddToState(Action a)
     {
         if (_doesContainInternalActions)
@@ -375,12 +323,9 @@ public class GameManager : MonoBehaviour
                 if (req[i + 1] is InternalAction internalAction)
                     internalAction.DispatchAction();
             }
-        }
-          
+        }          
         var last = actions.LastOrDefault();
-
-        Debug.Log("Add, Name: " + a.name);
-        
+        Debug.Log("Add, Name: " + a.name);        
         if (a.isUnordored)
         {
             UnordoredActionGroup g;
@@ -393,12 +338,9 @@ public class GameManager : MonoBehaviour
                 actions.Remove(last);
                 g = (UnordoredActionGroup)last;
             }
-
             g.AddAction(a);
-
             if (!g.IsInDefaultState())
                 actions.Add(g);
-
             return;
         }
 
@@ -419,11 +361,8 @@ public class GameManager : MonoBehaviour
             Report_Blocks.text = "Выбор состояние: " + a.ActionName;
         }
     }
-    
-    public void RemoveFromState(Action a)
-    {
-        actions.Remove(a);
-    }
+
+    public void RemoveFromState(Action a) => actions.Remove(a);    
 
     private List<Action> GetCurrentRoleActions()
     {

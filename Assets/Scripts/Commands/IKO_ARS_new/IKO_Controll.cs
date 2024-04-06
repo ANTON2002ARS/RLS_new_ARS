@@ -201,16 +201,13 @@ public class IKO_Controll : MonoBehaviour
     private float interval = 30f;
     private float timer = 0f;
     // Выбраная цель\\
-    private int choice_target;    
+    private int choice_target;
 
-    private void Awake()
-    {
-        Instance = this;
-    }
-
-
+    private void Awake() => Instance = this;
+  
     void Start()
     {
+        // Устанавливаем значение у линии вращение\\
         WorkMode = IkoWorkMode.Rpm6;        
         BrightnessController.onValueChanged.AddListener(BrightnessChanged);
         BrightnessController.value = _defaultBrightness;
@@ -228,20 +225,24 @@ public class IKO_Controll : MonoBehaviour
         var lastAngle = angles.z;
         angles.z += LineRotationSpeed * Time.deltaTime;
         LineObject.transform.localEulerAngles = angles;
-                
+
+        // Проходим по всем целям на ико \\                
         for (int i = 0; i < Targets.Count; i++)
         {
+            // Удаляем данные о цели если она уничтожена \\
             if (Targets[i] == null || Targets[i].GetComponent<Body_Target>().End_Player == true)
             {
                 Text_targets_fix[i].gameObject.SetActive(false);
                 Report.text = Str_Mistakes = "Удаление цели";
                 Report.color = Color.black;
                 _quentity_kill++;
+                // Удаляем номер цели и освобождаем его\\
                 Remove_Option(i);
                 Targets.RemoveAt(i);                
             }
             else
             {
+                // Выбираем цель на ико\\
                 if(i == Choice_target.value)
                 {
                     choice_target = i;
@@ -250,7 +251,8 @@ public class IKO_Controll : MonoBehaviour
                 }
                 else
                     Text_targets_fix[i].color = Color.black;
-                    
+
+                // Устанавлимаем номера над целями\\   
                 Text_targets_fix[i].transform.position = Targets[i].transform.position;                    
                 Text_targets_fix[i].text = "0" + Targets[i].GetComponent<Body_Target>().Namber_on_IKO.ToString();                   
                 Text_targets_fix[i].gameObject.SetActive(true);
@@ -274,9 +276,10 @@ public class IKO_Controll : MonoBehaviour
                 float x = Mathf.Sin(angle) * radius;
                 float y = Mathf.Cos(angle) * radius;
                 Vector2 start_prs = new Vector2(x, y);
+                // Вызываем ПРС на ико \\
                 if(Random.Range(0, 9) == 1)
                     Generate_PRS(start_prs, 0);
-
+               
                 Report.text = Str_Mistakes = "Появление новой цели," +
                               "\n    кол-во проигранных целей:  " + is_quentity +
                               "\n    кол-во удаленых целей:      " + _quentity_kill +
@@ -299,6 +302,7 @@ public class IKO_Controll : MonoBehaviour
 
     public void Changed_Text_Button()
     {
+        // Текст на кнопке меняем\\
         Text text_botton = Target_Buttons[0].GetComponentInChildren<Text>();
         text_botton.text = "Запрос цели";
         //Debug.Log("Смена текста");
@@ -319,43 +323,36 @@ public class IKO_Controll : MonoBehaviour
 
     public int Find_Free_Number(List<int> numbers)
     {
+        // Ищем свободный номер для цель\\
         numbers.Sort(); // Сортируем список чисел
         int lastNumber = -1; // Предыдущее число из списка
-
+        // Найдено пропущенное число
         foreach (int number in numbers)
         {
             if (number - lastNumber > 1)
-            {
-                // Найдено пропущенное число
                 return lastNumber + 1;
-            }
-
             lastNumber = number;
         }
-
         // Если нет пропущенных чисел, возвращаем следующее число за последним
         return lastNumber + 1;
     }
 
-
-    public void BrightnessChanged(float value)
-    {
-        Grid.alpha = value;
-    }
+    // Изменяем прозрачность сетки\\
+    public void BrightnessChanged(float value) => Grid.alpha = value;  
     
-    
+    // Для проверки что окно ико закрыто\\
     private bool _close_Iko;
     public void OpenIko()
     {        
         _ikoPanel.alpha = 1.0f;
         _ikoPanel.interactable = true;
         _ikoPanel.blocksRaycasts = true;    
- 
+        // Если есть последавательность для избавленме от помехи то проверяем на избавление\\ 
         if (InterferenceFolder.transform.childCount > 0)
             Check_Interference_Bloks();
-
+        // Очищаем список действий для помехи\\
         GameManager.Instance.Reset_Blocks_Action();
-
+        // Проверяем что ико не на паузе или продолжаем \\
         if (_close_Iko && !_stop_antenna)
         {
             Debug.Log("START time");
@@ -367,8 +364,7 @@ public class IKO_Controll : MonoBehaviour
                 _hasStarted = false;           
             else
                 _hasStarted = true;
-        }            
-                 
+        }                             
     }
 
     // На всякий лень\\
@@ -417,14 +413,15 @@ public class IKO_Controll : MonoBehaviour
     //проверяем на избавление от помехи\\
     public void Check_Interference_Bloks()
     {
+        // Проверяем что есть элементы\\
         if (Interferenses_.Count < 1)
             return;
-
+        // Не равны нулю \\
         if (Interferenses_.Peek() == null)
             return;
 
         Debug.Log("TAG: " + Interferenses_.Peek().gameObject.tag);
-
+        // по Tag оптровляем на проверку на избавление от помехи\\
         if (!GameManager.Instance.Check_Interference(Interferenses_.Peek().gameObject.tag))
         {
             Mistakes++;
@@ -436,27 +433,18 @@ public class IKO_Controll : MonoBehaviour
             Report.text = "Правильно, избавление от помех, кол-во ошибок: " + Mistakes;
             Report.color = Color.green;
         }
-
-        Interferenses_.Pop().Check_work = true;
-       
+        // Флаг на избавление от помехи\\
+        Interferenses_.Pop().Check_work = true;       
         //GameManager.Instance.Clear_Action();
     }
 
-
-    public void EnableStrobControl()
-    {
-        _strobContainer.SetActive(true);
-    }
-
-
-    public void DisableStrobControl()
-    {
-        _strobContainer.SetActive(false);
-    }
-
-
+    // Действие с поворотом антенны\\
+    public void EnableStrobControl() => _strobContainer.SetActive(true);
+    public void DisableStrobControl() => _strobContainer.SetActive(false);
+    // Вызиваем новую цель\\    
     public void Generate_Target()
     {
+        // Что есть ссылка на префаб\\
         if (Target_Flying == null)
             return;
 
@@ -485,11 +473,11 @@ public class IKO_Controll : MonoBehaviour
         Choice_target.options = options;
 
     }
-
-
+    // Запрашиваем цель\\
     public void Request_Targets()
     {
         if (!_hasStarted) return;
+        // Из списка цель запрашивается которыя первая\\
         int namber = 0;
         if (Targets[namber] != null )
         {
@@ -497,14 +485,11 @@ public class IKO_Controll : MonoBehaviour
             {
                 Targets[namber].GetComponent<Body_Target>().Check_Request = true;
                 Text text_botton = Target_Buttons[0].GetComponentInChildren<Text>();
-
                 if(_quentity_kill > 0)
                 {
                     List<int> Namber_on_IKO = new List<int>();
                     foreach (var target in Targets)
-                    {
-                        Namber_on_IKO.Add(target.GetComponent<Body_Target>().Namber_on_IKO);
-                    }
+                        Namber_on_IKO.Add(target.GetComponent<Body_Target>().Namber_on_IKO);                 
                     int _namber_on_IKO =  Find_Free_Number(Namber_on_IKO);
                     // После запроса цели присваеваем номер и освобождаем 00 \\ 
                     Targets[namber].GetComponent<Body_Target>().Namber_on_IKO = _namber_on_IKO;                    
@@ -533,15 +518,13 @@ public class IKO_Controll : MonoBehaviour
                 Report.color = Color.red;
                 Mistakes++;                
             }
-
         }
-
     }
-
-
+    // Для теста цели групповая или одиночная\\
     public void Button_Test_Group(bool _is_group)
     { 
         if (!_hasStarted) return;
+        // какая на ико выбрана цель \\
         int namber = Choice_target.value;
         if (Targets[namber].GetComponent<Body_Target>()._is_group != _is_group)
         {
@@ -556,10 +539,9 @@ public class IKO_Controll : MonoBehaviour
             // Цель проверена \\
             Targets[choice_target].GetComponent<Body_Target>().Check_is_Group = true;
         }           
-
     }
       
-    
+    // Для теста что Свой или Чужой \\
     public void Button_Test_Our( bool _is_Our)
     {       
         if (!_hasStarted) return;
@@ -583,7 +565,7 @@ public class IKO_Controll : MonoBehaviour
         }       
     }
 
-
+    // Заного тест проходить \\
     public void Restart()
     {
         _hasStarted = false;
@@ -620,13 +602,10 @@ public class IKO_Controll : MonoBehaviour
         Report.text = Str_Mistakes = "";
         Report.color = Color.black;
         // убираем помошнока\\
-        _has_help = false;
-        /*Is_Help_Target = false;
-        Is_Help_Interference = false;*/
+        _has_help = false;        
         Children_Button_Set.gameObject.SetActive(true);
     }
-    
-
+    // Начало теста \\
     public void Start_Test()
     {
         // start line \\
@@ -644,10 +623,8 @@ public class IKO_Controll : MonoBehaviour
         Generate_Target();
         // создаем помеху\\
         Generate_Interference();
-    }
-
-    
-
+    }    
+    // Приостановить тест \\
     private bool _stop_antenna;    
     public void Stop_timer()
     {        
@@ -689,26 +666,23 @@ public class IKO_Controll : MonoBehaviour
         //Debug.Log("Угол: " + angle + " градусов по часовой стрелке");
         return (int)angle;
     }
-        
+       
+    // Что значение есть в пределе значений \\
     private bool is_Within_Range(int azimuth_user, Vector2 of_target)
     {
         int azimuth_target = Find_Azimuth(of_target);
         float lowerLimit = azimuth_target * 0.9f; // 90% от нужного числа
         float upperLimit = azimuth_target * 1.1f; // 110% от нужного числа
-
         return azimuth_user >= lowerLimit && azimuth_user <= upperLimit;
     }
+    // Ищем расстояние до цели \\
     private bool Find_Limit(int long_target, float ring)
-    {
-        Debug.Log("long_target:" + long_target);
-        Debug.Log("ring:" + ring);
-        float lowerLimit = (float)((ring - 1) * 10);
-        Debug.Log("lowerLimit: " + lowerLimit);
-        float upperLimit = (float)((ring + 1) * 10);
-        Debug.Log("upperLimit: " + upperLimit);
+    {        
+        float lowerLimit = (float)((ring - 1) * 10);        
+        float upperLimit = (float)((ring + 1) * 10);        
         return long_target * 10 >= (int)lowerLimit && long_target * 10 <= (int)upperLimit;
     }
-
+    // Проверяем доклад о цели \\
     public void Check_line_Targets()
     {
         if (!_hasStarted) return;
@@ -738,25 +712,21 @@ public class IKO_Controll : MonoBehaviour
             Report.text = "Введите числа, не понятно";
             Report.color = Color.blue;
         }
-
-        Vector2 of_target = Targets[choice_target].GetComponent<Transform>().position;
-        
+        // Получем координаты цели \\
+        Vector2 of_target = Targets[choice_target].GetComponent<Transform>().position;        
         if(number_target != Targets[choice_target].GetComponent<Body_Target>().Namber_on_IKO)
         {
             Report.text = "Не для той цели значение";
             Report.color = Color.red;
             return;
-        }
-
-        
+        }        
         if (!is_Within_Range(azimuth, of_target))
         {
             Report.text = "ОШИБКА Азимута, ожидалось: " + azimuth;
             Report.color = Color.red;
             Mistakes++;
             return;
-        }
-                
+        }                
         float ring_target = (float)(of_target.magnitude * 15 / 4);
         //ring_to_long != Mathf.Round(ring_target) *10
         if (Find_Limit(ring_to_long, ring_target))
@@ -775,17 +745,14 @@ public class IKO_Controll : MonoBehaviour
     }
 
     private int exclude = 1;
-
+    // Создаем помеху на ико \\
     public void Generate_Interference()
     {
         GameObject Interferense;
         //Random.Range(0, 4)
         string _interferense_tag;
-
         List<int> numbers = new() { 0, 1, 2, 3, 4 }; // Создаем список чисел от 0 до 4, за исключением значения 2
-
         numbers.Remove(exclude); // Удаляем число-исключение из списка
-
         int randomIndex = Random.Range(0, numbers.Count); // Генерируем случайный индекс из доступных чисел
         //numbers[randomIndex]
         switch (numbers[randomIndex])
@@ -816,42 +783,35 @@ public class IKO_Controll : MonoBehaviour
                 exclude = 4;
                 break;
         }
-
         Call_Helper("На ИКО появилась помеха сначала определить её вид, " +
                 "\n потом попробовать избавится от неё выбрав действие в блоках в Машине 1 => Внутри КУНГа." +
                 "\n (При неправильном избавлении, помеха все равно исчезает и будет вызвана новая)", true);
-
         if (Interferenses_.Count > 0 && Interferenses_.Peek() != null)
         {
-            var OLD_interferense = Interferenses_.Peek();
-            
+            var OLD_interferense = Interferenses_.Peek();            
             if(OLD_interferense.GetComponent<Body_Interference>().Check_Test == false)
             {
                 Mistakes++;
                 Report.text = Str_Mistakes = "ОШИБКА, не определил старою помеху";
                 Report.color = Color.red;
-            }
-            
+            }            
         }
-
         Interferense.GetComponent<Body_Interference>().tag = _interferense_tag;
         Interferenses_.Push(Interferense.GetComponent<Body_Interference>());
-
     }
-
-    
+    // Проверяем вид помехи на ико по кнопкам\\
     public void Check_Interference(int namber_button)
     {
         if (!_hasStarted) return;
+        // Что они есть на ико\\
         if (InterferenceFolder.transform.childCount == 0 || Interferenses_.Count == 0)
-            return;
-              
+            return;           
+        // Получаем последнию помеху на икр\\
         Body_Interference interference = Interferenses_.Peek();
         if (interference == null)
             return;
-
         interference.Check_Test = true;
-
+        // Проверяем что правильно определил помкху \\
         switch (namber_button)
         {
             case 0:
@@ -917,44 +877,45 @@ public class IKO_Controll : MonoBehaviour
         Report.text = Str_Mistakes = "ОШИБКА не правильно определии помеху, кол-во ошибок: " + Mistakes;
         Report.color = Color.red;        
     }
-
+    // Создаем ПРС \\
     public void Generate_PRS(Vector2 start_PRS , int of_target)
-    {
+    {       
+        // Только одна ПРСможет быть на ико\\
         if (PRS_of_target.Count >= 2)
             return;
-
-
         if (of_target == 0)
             Call_Helper("На ИКО противорадиолокационный снаряд. Доложить: пуск ПРС 000-000 (азимут-дальность)" +
                 " \n и избавиться от него на ПОС72 => Вскрыть крышку и включаеть режим мерцания ", true);
         else
             Call_Helper("На ИКО ПротивоРадиолокационный Снаряд. Доложить: Цель 00, пуск ПРС 000-000 (азимут-дальность)" +
                 "\n и избавиться от него на ПОС72 => Вскрыть крышку и включить режим мерцания ", true);
+        // Создаем ПРС\\
         GameObject PRS = Instantiate(PRS_target, TargetsFolder, false);
         PRS.transform.SetParent(TargetsFolder.transform);
         PRS.GetComponent<Body_PRS>().Start_PRS = start_PRS;
         PRS.GetComponent<Body_PRS>().Of_Target = of_target;
+        // Добовляем в список  \\
         PRS_of_target.Add(PRS);      
     }
-
+    // Проверяем что провильно долошил о ПРС\\
     public void Check_Line_PRS()
     {
+        // Получаем данные из строки\\
         //Цель 00, пуск ПРС 000-000
         string input = Status_PRS.text;
         List<int> data_report = new List<int>();
-        string[] words = input.Split(' ', ',', '-');
-        
+        string[] words = input.Split(' ', ',', '-');        
         foreach (string word in words)
         {
             int num;
             if (int.TryParse(word, out num))
                 data_report.Add(num);         
         }
-
+        // Получили Введеные данные\\
         int number_target = 0;
         int azimuth;
         int ring_to_long;
-
+        // пуск ПРС от цели или одиночная \\
         if (data_report.Count == 2)
         {  
             azimuth = data_report[0];
@@ -975,12 +936,11 @@ public class IKO_Controll : MonoBehaviour
         }
 
         Debug.Log("number_target: " + number_target + " azimuth: " + azimuth + " ring_to_long: " + ring_to_long);
-        Debug.Log("PRS_of_target.Count: " + PRS_of_target.Count);
-                
-
+        Debug.Log("PRS_of_target.Count: " + PRS_of_target.Count);                
+        // Проверяем данные о цели \\
         foreach (var prs in  PRS_of_target)
         {            
-            if(prs != null && prs.GetComponent<Body_PRS>().Of_Target == number_target /*&& !prs.GetComponent<Body_PRS>().Check_Status*/)
+            if(prs != null && prs.GetComponent<Body_PRS>().Of_Target == number_target)
             {
                 Vector2 position_prs = prs.GetComponent<Transform>().position;
 
@@ -1011,31 +971,23 @@ public class IKO_Controll : MonoBehaviour
                 Report.color = Color.green;
 
                 return;
-            }    
-            /*else if (prs.GetComponent<Body_PRS>().Check_Status)
-            {
-                Report.text = "Доклад уже был о ПРС";
-                Report.color = Color.red;
-                return;
-            }*/
+            } 
         }
-
         Report.text = "Не для той цели значение";
         Report.color = Color.red;
     }
-
+    // Проверка режима мерцание у ПРС что установлен\\ 
     public void Check_Flickering(GameObject PRS)
     {
         if (!PRS.GetComponent<Body_PRS>().Mode_Frickering)
             Kill_RLS();
-
+        // Удаляем ПРС == Промазать \\
         PRS_of_target.Remove(PRS);
-
         Destroy(PRS);        
         Report.text = Str_Mistakes = "противорадиолокационный снаряд => промaзать";
         Report.color = Color.green;
     }
-
+    // Уничтожение РЛС ПРСом \\
     private void Kill_RLS()
     {
         // тест проволен РЛС уничножена\\
@@ -1048,6 +1000,7 @@ public class IKO_Controll : MonoBehaviour
         GameManager.Instance.FailCheck();
     }
 
+    // Установика что включен режим мерцание у ПРС \\
     public void Set_Mode_Frickering()
     {
         foreach (var prs in PRS_of_target)
@@ -1055,7 +1008,7 @@ public class IKO_Controll : MonoBehaviour
                 prs.GetComponent<Body_PRS>().Mode_Frickering = true;
     }
 
-
+    // Установка учебного режима\\
     public void Test_children_mode()
     {
         _has_help = true;
@@ -1063,7 +1016,7 @@ public class IKO_Controll : MonoBehaviour
         Max_Mistakes = 1000;
     }
         
-
+    // Вызвать учебный режим\\
     public void Call_Helper(string text, bool _can_continue)
     {
         if (!_has_help)

@@ -114,7 +114,6 @@ public class Body_Target : MonoBehaviour
         is_PRS_one = true;
         Start_Up_PRS = true;
         IKO_Controll.Instance.Generate_PRS(this.transform.position, Namber_on_IKO);
-       
     }
     
     private void Start()

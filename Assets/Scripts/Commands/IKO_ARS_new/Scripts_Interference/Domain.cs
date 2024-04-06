@@ -5,39 +5,27 @@ using UnityEngine.UI;
 
 public class Domain : MonoBehaviour
 {
-    [SerializeField]    
-    private GameObject image;
-
-    [SerializeField]
-    private CanvasGroup Canvas;
-
-    void Start()
-    {
-        image.SetActive(false);
-    }
-    
+    [SerializeField] private GameObject image;
+    [SerializeField] private CanvasGroup Canvas;
+    // Скрываем для обноружении\\
+    void Start() => image.SetActive(false);    
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.tag != "Line")
-            return;        
-        image.SetActive(true);              
-           
+            return;  
+        // Показываем часть помехи \\
+        image.SetActive(true);
+        // Плавное удаление помехи \\
         if(GetComponentInParent<Body_Interference>() != null && GetComponentInParent<Body_Interference>().Check_work == true)
         {
             Canvas.alpha -= 0.2f;
+            // Удаляем всю помеху при видимоть \\
             if(Canvas.alpha < 0.01f)
-            {                
-                GetComponentInParent<Body_Interference>().Delete();
-            }
+                GetComponentInParent<Body_Interference>().Delete();     
         }
-
-        if(this.tag == "PASSIVE" && Body_Passive._is_strobing == true)            
-        {
-            Canvas.alpha -= 0.4f;           
-        }
-
-       // Canvas.alpha = 0.8f;
-    }
-   
+        // Для стробирование не применяется\\
+        if(this.tag == "PASSIVE" && Body_Passive._is_strobing == true)
+            Canvas.alpha -= 0.4f; 
+    }   
 }
